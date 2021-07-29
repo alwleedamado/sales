@@ -1,5 +1,5 @@
 <div class="container">
-  <a mat-flat-button color="primary" (click)="openCategoryDialog()">Add New Category</a>
+  <a mat-flat-button id="open-dialog" color="primary" (click)="openCategoryDialog()">Add New Category</a>
   <div class="mat-elevation-z1">
     <table class="table table-responsive" mat-table matSort [dataSource]='dataSource'>
       <ng-container matColumnDef="name">

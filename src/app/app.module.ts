@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {CategoriesModule} from "./categories/categories.module";
 import {ToastrModule} from "ngx-toastr";
+import {ItemsModule} from "./items/items.module";
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import {ToastrModule} from "ngx-toastr";
     AppRoutingModule,
     BrowserAnimationsModule,
     CategoriesModule,
+    ItemsModule,
     ToastrModule.forRoot()
   ],
   providers: [],
