@@ -1,0 +1,33 @@
+<ng-container class='dialog-container'>
+  <mat-dialog-content [formGroup]="itemForm">
+    <h1 mat-dialog-title>Item</h1>
+    <div class="form-group">
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input [formControl]="name" matInput>
+        <mat-error></mat-error>
+      </mat-form-field>
+        <mat-form-field class="m-lg-4" appearance="fill">
+          <mat-label>Price</mat-label>
+          <input matInput [formControl]="price">
+          <span matSuffix>$</span>
+        </mat-form-field>
+    </div>
+    <div class="form-group">
+      <mat-form-field appearance="fill">
+        <mat-label>Category</mat-label>
+        <mat-select></mat-select>
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <mat-form-field appearance="fill">
+        <mat-label>Description</mat-label>
+        <textarea [formControl]="description" matInput></textarea>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-flat-button (click)="save()" color="primary">Save</button>
+    <button mat-flat-button color="primary" (click)="close()" [mat-dialog-close]="true">Cancel</button>
+  </mat-dialog-actions>
+</ng-container>
