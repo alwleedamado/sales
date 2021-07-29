@@ -1,7 +1,7 @@
 <div class="container">
-  <a mat-flat-button color="primary" [routerLink]="['/categories', 'input', '0']">Add New Category</a>
+  <a mat-flat-button color="primary" (click)="openCategoryDialog()">Add New Category</a>
   <div class="mat-elevation-z1">
-    <table class="table table-responsive"mat-table matSort [dataSource]='dataSource'>
+    <table class="table table-responsive" mat-table matSort [dataSource]='dataSource'>
       <ng-container matColumnDef="name">
         <th mat-header-cell mat-sort-header *matHeaderCellDef> name </th>
         <td mat-cell *matCellDef="let category"> {{category.name}} </td>

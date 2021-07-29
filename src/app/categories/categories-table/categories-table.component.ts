@@ -4,6 +4,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {MatTableDataSource} from "@angular/material/table";
 import {Category} from "../../shared-services/category.model";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {CategoryModalComponent} from "../category-modal/category-modal.component";
 
 @Component({
   selector: 'app-categories-table',
@@ -15,7 +17,8 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
 
   constructor(  private toastr: ToastrService,
                 private router:Router,
-                private activatedRoute: ActivatedRoute) {
+                private activatedRoute: ActivatedRoute,
+                private dialog: MatDialog) {
   this.paginator = <MatPaginator>{};
   }
   dataSource: MatTableDataSource<Category> = new MatTableDataSource<Category>(this.categories);
@@ -25,7 +28,11 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
-
+  openCategoryDialog() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.autoFocus = true;
+    this.dialog.open(CategoryModalComponent, dialogConfig);
+  }
   editCategory(id: number){
 
   }

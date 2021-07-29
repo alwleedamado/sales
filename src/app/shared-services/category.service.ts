@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {Observable} from "rxjs";
+import {Observable, throwError} from "rxjs";
 import {Category} from "./category.model";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {catchError} from "rxjs/operators";
@@ -11,11 +11,11 @@ export class CategoryService {
 
   getAllCategories(): Observable<Category>{
     return this.http.get<Category>(this.baseUrl).pipe(
-      catchError(this.handleError)
+      catchError(CategoryService.handleError)
     );
 }
 
-  private handleError(err: HttpErrorResponse) {
-
+  private static handleError(err: any, caught:Observable<Category>) : Observable<any>{
+    return throwError(err);
   }
 }
