@@ -6,11 +6,11 @@ import {catchError} from "rxjs/operators";
 
 @Injectable()
 export class CategoryService {
-  baseUrl = 'http://localhost/api/categories';
+  baseUrl = 'https://localhost:44381/api/Categories';
   constructor(private http: HttpClient) { }
 
-  getAllCategories(): Observable<Category>{
-    return this.http.get<Category>(this.baseUrl).pipe(
+  getAllCategories(): Observable<Category[]>{
+    return this.http.get<Category[]>(this.baseUrl).pipe(
       catchError(CategoryService.handleError)
     );
   }
@@ -20,17 +20,23 @@ export class CategoryService {
   }
 
   addCategory(category: Category) {
-    return this.http.post<Category>(this.baseUrl, category);
+    return this.http.post<Category>(this.baseUrl, category).pipe(
+      catchError(CategoryService.handleError)
+    );;
   }
 
   updateCategory(id: number, category: Category) {
-    return this.http.put(`${this.baseUrl}/${id}`,category);
+    return this.http.put(`${this.baseUrl}/${id}`,category).pipe(
+      catchError(CategoryService.handleError)
+    );;
   }
   deleteCategory(id: number) {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+    return this.http.delete(`${this.baseUrl}/${id}`).pipe(
+      catchError(CategoryService.handleError)
+    );;
   }
 
-  private static handleError(err: any, caught:Observable<Category>) : Observable<any>{
+  private static handleError(err: any, caught:Observable<any>) : Observable<any>{
     return throwError(err);
   }
 }

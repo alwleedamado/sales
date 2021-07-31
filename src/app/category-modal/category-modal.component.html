@@ -4,13 +4,13 @@
   <div class="form-group">
     <mat-form-field appearance="fill">
       <mat-label>Name</mat-label>
-      <input matInput>
+      <input [formControl]="name" matInput>
     </mat-form-field>
   </div>
     <div class="form-group">
       <mat-form-field appearance="fill">
         <mat-label>Description</mat-label>
-        <textarea matInput></textarea>
+        <textarea [formControl]="description" matInput></textarea>
       </mat-form-field>
     </div>
   </mat-dialog-content>

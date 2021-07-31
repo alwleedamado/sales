@@ -31,6 +31,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {CategoryMockService} from "./services/category.mock.service";
 import {HttpClientModule} from "@angular/common/http";
+import {MatSortModule} from "@angular/material/sort";
+import {CategoryService} from "./services/category.service";
 
 @NgModule({
   declarations: [
@@ -48,10 +50,11 @@ import {HttpClientModule} from "@angular/common/http";
   imports: [
     BrowserModule,
     RouterModule.forRoot([
-      {path:'categories', component: CategoriesTableComponent},
-      {path:'items', component:ItemsTableComponent},
-      {path:'invoices', component: InvoiceTableComponent}
-    ]),
+      {path: 'categories', component: CategoriesTableComponent},
+      {path: 'items', component: ItemsTableComponent},
+      {path: 'invoices', component: InvoiceTableComponent},
+      {path:'**', redirectTo:'categories', pathMatch:'full'}
+    ],{onSameUrlNavigation: 'reload'}),
     BrowserAnimationsModule,
     MatNativeDateModule,
     ToastrModule.forRoot(),
@@ -70,8 +73,9 @@ import {HttpClientModule} from "@angular/common/http";
     MatToolbarModule,
     MatIconModule,
     HttpClientModule,
+    MatSortModule,
   ],
-  providers: [CategoryMockService],
+  providers: [CategoryService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

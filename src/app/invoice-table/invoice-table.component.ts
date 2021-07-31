@@ -12,7 +12,7 @@ import {InvoiceModalComponent} from "../invoice-modal/invoice-modal.component";
 })
 export class InvoiceTableComponent implements OnInit {
   invoices: Invoice[] = [];
-  displayedColumns: string[] = ['name', 'description'];
+  displayedColumns: string[] = ['id', 'issuedOn','customerName', 'totalPrice'];
   dataSource: MatTableDataSource<Invoice> = new MatTableDataSource<Invoice>(this.invoices);
   constructor(private invoiceService: InvoiceService, private dialog: MatDialog) { }
 
