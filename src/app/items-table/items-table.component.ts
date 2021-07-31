@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
-import {Item} from "../../shared-services/item.model";
-import {ItemService} from "../item.service";
+import {Item} from "../services/item.model";
+import {ItemService} from "../services/item.service";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
-import {CategoryModalComponent} from "../../categories/category-modal/category-modal.component";
 import {ItemsModalComponent} from "../items-modal/items-modal.component";
 
 @Component({

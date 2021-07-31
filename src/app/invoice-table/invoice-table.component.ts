@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
-import {Invoice} from "../../shared-services/invoice.model";
-import {InvoiceService} from "../invoice.service";
+import {Invoice} from "../services/invoice.model";
+import {InvoiceService} from "../services/invoice.service";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {InvoiceModalComponent} from "../invoice-modal/invoice-modal.component";
 
@@ -10,7 +10,7 @@ import {InvoiceModalComponent} from "../invoice-modal/invoice-modal.component";
   templateUrl: './invoice-table.component.html',
   styleUrls: ['./invoice-table.component.scss']
 })
-export class invoiceTableComponent implements OnInit {
+export class InvoiceTableComponent implements OnInit {
   invoices: Invoice[] = [];
   displayedColumns: string[] = ['name', 'description'];
   dataSource: MatTableDataSource<Invoice> = new MatTableDataSource<Invoice>(this.invoices);

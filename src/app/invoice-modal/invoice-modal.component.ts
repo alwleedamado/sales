@@ -2,9 +2,9 @@ import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {validateConstructorDependencies} from "@angular/compiler-cli/src/ngtsc/annotations/src/util";
 import {MatTableDataSource} from "@angular/material/table";
-import {Category} from "../../shared-services/category.model";
+import {Category} from "../services/category.model";
 import {MatPaginator} from "@angular/material/paginator";
-import {Item} from "../../shared-services/item.model";
+import {Item} from "../services/item.model";
 
 @Component({
   selector: 'app-items-modal',
