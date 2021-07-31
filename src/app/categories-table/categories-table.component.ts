@@ -9,6 +9,7 @@ import {CategoryModalComponent} from "../category-modal/category-modal.component
 import {CategoryMockService} from "../services/category.mock.service";
 import {CategoryService} from "../services/category.service";
 import {ScrollStrategyOptions} from "@angular/cdk/overlay";
+import {openDialog} from "../dialog.utils";
 
 @Component({
   selector: 'app-categories-table',
@@ -33,20 +34,7 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
   }
 
   openCategoryDialog(data?: any) {
-    let dialogConfig = new MatDialogConfig();
-    dialogConfig.autoFocus = true;
-
-    if(typeof data !== 'undefined') {
-      console.log(data);
-      dialogConfig.data = data;
-      dialogConfig.data.formType = 'update';
-      dialogConfig.closeOnNavigation = false;
-      dialogConfig.disableClose = true;
-      this.dialog.open(CategoryModalComponent, dialogConfig);
-    }else {
-      dialogConfig.data = {formType: 'create'};
-      this.dialog.open(CategoryModalComponent, dialogConfig);
-    }
+    openDialog(this.dialog, CategoryModalComponent, data);
   }
   editCategory(id: number) {
     let category = this.categories.find(m => m.id == id);

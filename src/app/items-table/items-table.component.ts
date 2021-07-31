@@ -4,6 +4,8 @@ import {Item} from "../services/item.model";
 import {ItemService} from "../services/item.service";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {ItemsModalComponent} from "../items-modal/items-modal.component";
+import {CategoryModalComponent} from "../category-modal/category-modal.component";
+import {openDialog} from "../dialog.utils";
 
 @Component({
   selector: 'app-items-table',
@@ -20,9 +22,7 @@ export class ItemsTableComponent implements OnInit {
   }
 
   openItemsDialog() {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.autoFocus = true;
-    this.dialog.open(ItemsModalComponent, dialogConfig);
+   openDialog(this.dialog, ItemsModalComponent,{});
   }
 
   deleteItem(id: number) {
