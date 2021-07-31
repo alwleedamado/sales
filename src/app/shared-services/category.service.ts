@@ -13,7 +13,22 @@ export class CategoryService {
     return this.http.get<Category>(this.baseUrl).pipe(
       catchError(CategoryService.handleError)
     );
-}
+  }
+
+  getCategoriesNames() {
+    return this.http.get<Category[]>(this.baseUrl);
+  }
+
+  addCategory(category: Category) {
+    return this.http.post<Category>(this.baseUrl, category);
+  }
+
+  updateCategory(id: number, category: Category) {
+    return this.http.put(`${this.baseUrl}/${id}`,category);
+  }
+  deleteCategory(id: number) {
+    return this.http.delete(`${this.baseUrl}/${id}`);
+  }
 
   private static handleError(err: any, caught:Observable<Category>) : Observable<any>{
     return throwError(err);

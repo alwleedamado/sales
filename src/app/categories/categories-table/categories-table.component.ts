@@ -6,6 +6,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {Category} from "../../shared-services/category.model";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {CategoryModalComponent} from "../category-modal/category-modal.component";
+import {CategoryMockService} from "../../shared-services/category.mock.service";
 
 @Component({
   selector: 'app-categories-table',
@@ -18,7 +19,8 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
   constructor(  private toastr: ToastrService,
                 private router:Router,
                 private activatedRoute: ActivatedRoute,
-                private dialog: MatDialog) {
+                private dialog: MatDialog,
+                private categoryService: CategoryMockService) {
   this.paginator = <MatPaginator>{};
   }
   dataSource: MatTableDataSource<Category> = new MatTableDataSource<Category>(this.categories);
@@ -37,6 +39,13 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
 
   }
   ngOnInit(): void {
+    this.categoryService.getAllCategories().subscribe(data => {
+      this.categories = data;
+      this.dataSource = new MatTableDataSource<Category>(this.categories);
+    },
+      err =>{
+      console.error(err);
+      })
   }
 
 
