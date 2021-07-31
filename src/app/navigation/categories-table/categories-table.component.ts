@@ -3,10 +3,10 @@ import {MatPaginator} from "@angular/material/paginator";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {MatTableDataSource} from "@angular/material/table";
-import {Category} from "../../shared-services/category.model";
+import {Category} from "../services/category.model";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {CategoryModalComponent} from "../category-modal/category-modal.component";
-import {CategoryMockService} from "../../shared-services/category.mock.service";
+import {CategoryMockService} from "../services/category.mock.service";
 
 @Component({
   selector: 'app-categories-table',
