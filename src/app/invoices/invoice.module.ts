@@ -13,6 +13,8 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {MatSelectModule} from "@angular/material/select";
 import { InvoiceModalComponent } from './invoice-modal/invoice-modal.component';
 import { invoiceTableComponent } from './invoice-table/invoice-table.component';
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
 
 
@@ -35,9 +37,11 @@ import { invoiceTableComponent } from './invoice-table/invoice-table.component';
     MatInputModule,
     ReactiveFormsModule,
     MatDialogModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDatepickerModule,
+    MatAutocompleteModule
   ],
   entryComponents:[InvoiceModalComponent],
   exports:[]
 })
-export class ItemsModule { }
+export class InvoiceModule { }
