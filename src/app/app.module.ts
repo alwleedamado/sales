@@ -33,6 +33,7 @@ import {CategoryMockService} from "./services/category.mock.service";
 import {HttpClientModule} from "@angular/common/http";
 import {MatSortModule} from "@angular/material/sort";
 import {CategoryService} from "./services/category.service";
+import {ItemsService} from "./services/items.service";
 
 @NgModule({
   declarations: [
@@ -75,7 +76,7 @@ import {CategoryService} from "./services/category.service";
     HttpClientModule,
     MatSortModule,
   ],
-  providers: [CategoryService],
+  providers: [CategoryService,ItemsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -18,7 +18,9 @@ import {openDialog} from "../dialog.utils";
 })
 export class CategoriesTableComponent implements OnInit,AfterViewInit {
   private categories: Category[] = [];
-
+  dataSource: MatTableDataSource<Category> = new MatTableDataSource<Category>(this.categories);
+  displayedColumns=['name', 'description', 'edit', 'delete'];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(  private toastr: ToastrService,
                 private router:Router,
                 private activatedRoute: ActivatedRoute,
@@ -26,9 +28,7 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
                 private categoryService: CategoryService) {
   this.paginator = <MatPaginator>{};
   }
-  dataSource: MatTableDataSource<Category> = new MatTableDataSource<Category>(this.categories);
-  displayedColumns=['name', 'description', 'edit', 'delete'];
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
@@ -44,6 +44,7 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
     this.categoryService.getAllCategories().subscribe(data => {
       this.categories = data;
       this.dataSource = new MatTableDataSource<Category>(this.categories);
+      this.dataSource.paginator = this.paginator;
     },
       err =>{
       console.error(err);
@@ -54,9 +55,13 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
   deleteCategory(id: number) {
     this.categoryService.deleteCategory(id)
       .subscribe(data =>{
-        this.toastr.success('Category deleted successfully ', 'Deletion', {timeOut: 300})
-
+        this.toastr.success('Category deleted successfully ', 'Deletion', {timeOut: 300});
+      setTimeout(() =>window.location.href = '/categories', 700);
+       ;
         },
-        err => this.toastr.error('Category deletion failed ', 'Deletion failed'));
+        err => {
+          this.toastr.error('Category deletion failed ', 'Deletion failed', {timeOut: 300});
+          setTimeout(() =>window.location.href = '/categories', 700);
+        });
   }
 }
