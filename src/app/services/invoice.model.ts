@@ -1,9 +1,5 @@
 import { Category } from "./category.model";
-import { Item } from "./item.model";
-
-export interface InvoiceCategory {
-  name: string;
-}
+import { Product } from "./product.model";
 
 export interface Invoice {
   id: number;
@@ -16,20 +12,16 @@ export interface Invoice {
   netAmount: number;
 }
 
-interface Product {
-  name:string;
-  id:number;
-}
 
 export interface InvoiceDetail {
-  id?: number;
-  name:string;
-  quantity: number;
-  product?: Product;
+  totalPrice?: number;
+  name?: string;
+  id: number;
   productId: number;
   price: number;
   qty: number;
   discount: number;
-  invoiceId?: number;
+  invoiceId: number;
+  product?: Product;
   netAmount: number;
 }

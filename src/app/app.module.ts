@@ -9,8 +9,8 @@ import {MatNativeDateModule} from "@angular/material/core";
 import {RouterModule} from "@angular/router";
 import {CategoriesTableComponent} from "./categories-table/categories-table.component";
 import {CategoryModalComponent} from "./category-modal/category-modal.component";
-import {ItemsModalComponent} from "./items-modal/items-modal.component";
-import {ItemsTableComponent} from "./items-table/items-table.component";
+import {ProductsModalComponent} from "./items-modal/products-modal.component";
+import {ProductsTableComponent} from "./items-table/products-table.component";
 import {InvoiceModalComponent} from "./invoice-modal/invoice-modal.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {InvoiceTableComponent} from "./invoice-table/invoice-table.component";
@@ -33,7 +33,7 @@ import {CategoryMockService} from "./services/category.mock.service";
 import {HttpClientModule} from "@angular/common/http";
 import {MatSortModule} from "@angular/material/sort";
 import {CategoryService} from "./services/category.service";
-import {ItemsService} from "./services/items.service";
+import {ProductsService} from "./services/products.service";
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
 import {InvoiceFormComponent} from "./invoice-form/invoice-form.component";
 
@@ -42,20 +42,20 @@ import {InvoiceFormComponent} from "./invoice-form/invoice-form.component";
     AppComponent,
     CategoriesTableComponent,
     CategoryModalComponent,
-    ItemsModalComponent,
-    ItemsTableComponent,
+    ProductsModalComponent,
+    ProductsTableComponent,
     InvoiceModalComponent,
     DashboardComponent,
     InvoiceTableComponent,
     NavComponent,
-    InvoiceFormComponent
+    InvoiceFormComponent,
 
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot([
       {path: 'categories', component: CategoriesTableComponent},
-      {path: 'items', component: ItemsTableComponent},
+      {path: 'items', component: ProductsTableComponent},
       {path: 'invoices', component: InvoiceTableComponent},
       {path:'invoices/:id',component:InvoiceFormComponent},
       {path:'**', redirectTo:'categories', pathMatch:'full'}
@@ -80,7 +80,7 @@ import {InvoiceFormComponent} from "./invoice-form/invoice-form.component";
     HttpClientModule,
     MatSortModule,
   ],
-  providers: [CategoryService,ItemsService,    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}],
+  providers: [CategoryService,ProductsService,    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

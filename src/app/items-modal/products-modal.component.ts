@@ -4,27 +4,27 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {CategoryService} from "../services/category.service";
 import {Observable} from "rxjs";
 import {Category, CategoryLookup} from "../services/category.model";
-import {Item} from "../services/item.model";
-import {ItemsService} from "../services/items.service";
+import {Product} from "../services/product.model";
+import {ProductsService} from "../services/products.service";
 import {ToastrService} from "ngx-toastr";
 import {takeWhile} from "rxjs/operators";
 
 @Component({
   selector: 'app-items-modal',
-  templateUrl: './items-modal.component.html',
-  styleUrls: ['./items-modal.component.scss']
+  templateUrl: './products-modal.component.html',
+  styleUrls: ['./products-modal.component.scss']
 })
-export class ItemsModalComponent implements OnInit, OnDestroy {
+export class ProductsModalComponent implements OnInit, OnDestroy {
   itemForm: FormGroup;
   formType: string = 'create';
   categories$: Observable<CategoryLookup[]>;
   private itemId: number;
-  private invoiceItems: Item[] = [];
+  private invoiceProducts: Product[] = [];
   private active: boolean = true;
   constructor(@Optional() @Inject(MAT_DIALOG_DATA) private data: any,
-              private itemsService: ItemsService,
+              private itemsService: ProductsService,
               private toastr: ToastrService,
-              public dialogRef: MatDialogRef<ItemsModalComponent>) {
+              public dialogRef: MatDialogRef<ProductsModalComponent>) {
     this.itemForm = new FormGroup({
       name: new FormControl(data?.item.name, Validators.required),
       description: new FormControl(data?.item.description, Validators.required),
@@ -55,34 +55,34 @@ get category() {
     return this.itemForm.get('category') as FormControl;
 }
   save() {
-    let item = <Item>{};
+    let item = <Product>{};
     item.name = this.name.value;
     item.price = this.price.value;
     item.categoryId = this.category.value.id;
     item.description = this.description.value;
     if(this.formType === 'create'){
 
-      this.itemsService.addItem(item)
+      this.itemsService.addProduct(item)
         .pipe(takeWhile(() => this.active))
         .subscribe(ret => {
-      this.toastr.success('Item Created successfully ', 'Creation')
+      this.toastr.success('Product Created successfully ', 'Creation')
       this.dialogRef.close();
     },
           error => {
-            this.toastr.success('Item creation failed ', 'updating')
+            this.toastr.success('Product creation failed ', 'updating')
             this.dialogRef.close();
           });
     }else if(this.formType === 'update'){
       item.id = this.itemId;
-      this.itemsService.updateItem(item.id, item)
+      this.itemsService.updateProduct(item.id, item)
         .pipe(takeWhile(() => this.active))
         .subscribe(
         d => {
-          this.toastr.success('Item updated successfully ', 'updating')
+          this.toastr.success('Product updated successfully ', 'updating')
           this.dialogRef.close();
         },
           error => {
-            this.toastr.success('Item updated failed ', 'updating')
+            this.toastr.success('Product updated failed ', 'updating')
             this.dialogRef.close();
           });
     }

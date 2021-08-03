@@ -4,9 +4,9 @@ import {validateConstructorDependencies} from "@angular/compiler-cli/src/ngtsc/a
 import {MatTable, MatTableDataSource} from "@angular/material/table";
 import {Category, CategoryLookup} from "../services/category.model";
 import {MatPaginator} from "@angular/material/paginator";
-import {Item, ItemLookup} from "../services/item.model";
+import {Product, ProductLookup} from "../services/product.model";
 import {EMPTY, Observable} from "rxjs";
-import {ItemsService} from "../services/items.service";
+import {ProductsService} from "../services/products.service";
 import {ToastrService} from "ngx-toastr";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {CategoryService} from "../services/category.service";
@@ -16,23 +16,23 @@ import {map, takeWhile} from "rxjs/operators";
 import {ActivatedRoute} from "@angular/router";
 
 @Component({
-  selector: 'app-items-modal',
+  selector: 'app-Products-modal',
   templateUrl: './invoice-form.component.html',
   styleUrls: ['./invoice-form.component.scss'],
 
 })
 export class InvoiceFormComponent implements OnInit,AfterViewInit,OnDestroy {
   invoiceForm: FormGroup;
-  tableItems: Item[] = [];
-  // invoiceDetails: Item[] = [];
+  tableProducts: Product[] = [];
+  // invoiceDetails: Product[] = [];
 
-  dataSource: MatTableDataSource<Item> = new MatTableDataSource<Item>(this.tableItems);
+  dataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>(this.tableProducts);
   displayedColumns=['name','price','quantity','total','discount','net', 'edit', 'delete'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatTable) table: MatTable<any>;
   categories$: Observable<CategoryLookup[]> = EMPTY;
-  items$: Observable<ItemLookup[]> = EMPTY;
-  public invoiceItems: InvoiceDetail[] = [];
+  Products$: Observable<ProductLookup[]> = EMPTY;
+  public invoiceProducts: InvoiceDetail[] = [];
   private netAmount: number = 0;
   private totalPrice: number = 0;
   invoiceTotalAmount: number = 0;
@@ -41,7 +41,7 @@ export class InvoiceFormComponent implements OnInit,AfterViewInit,OnDestroy {
   ngAfterViewInit() {
   }
   constructor(
-              private itemsService: ItemsService,
+              private ProductsService: ProductsService,
               private invoiceService: InvoiceService,
               private categoryService: CategoryService,
               private toastr: ToastrService,
@@ -53,7 +53,7 @@ export class InvoiceFormComponent implements OnInit,AfterViewInit,OnDestroy {
       description: new FormControl({value: '', disabled:true}, Validators.required),
       category: new FormControl({value: '', disabled:true}, Validators.required),
       issuedOn: new FormControl('', Validators.required),
-      itemName: new FormControl({value: '', disabled:true}, Validators.required),
+      ProductName: new FormControl({value: '', disabled:true}, Validators.required),
       quantity: new FormControl({value: '', disabled:true}, Validators.required),
       discount: new FormControl(),
       price: new FormControl({value: '', disabled:true}, Validators.required),
@@ -94,8 +94,8 @@ export class InvoiceFormComponent implements OnInit,AfterViewInit,OnDestroy {
   get quantity() {
     return this.invoiceForm.get('quantity') as FormControl;
   }
-  get itemName() {
-    return this.invoiceForm.get('itemName') as FormControl;
+  get ProductName() {
+    return this.invoiceForm.get('ProductName') as FormControl;
   }
   get discount() {
     return this.invoiceForm.get('discount') as FormControl;
@@ -119,7 +119,7 @@ export class InvoiceFormComponent implements OnInit,AfterViewInit,OnDestroy {
           this.invoiceTotalAmount += a.netAmount;
           this.invoiceTotalDiscount += a.discount;
 
-          this.invoiceItems.push(a);
+          this.invoiceProducts.push(a);
         });
 
       }, error => {
@@ -130,28 +130,28 @@ export class InvoiceFormComponent implements OnInit,AfterViewInit,OnDestroy {
   }
 
 
-  calculateNet(item: InvoiceDetail): number {
+  calculateNet(Product: InvoiceDetail): number {
     // @ts-ignore
-    let i = item.price * item.qty - (item.discount * item.qty * item.price / 100);
+    let i = Product.price * Product.qty - (Product.discount * Product.qty * Product.price / 100);
     return i;
   }
-  calculateTotal(item:InvoiceDetail){
-    return item.price * item.qty;
+  calculateTotal(Product:InvoiceDetail){
+    return Product.price * Product.qty;
   }
   displayName(categoryLookup:CategoryLookup): string {
     return categoryLookup !== null ? categoryLookup.name : '';
   }
 
-   createGroup(item: InvoiceDetail){
-    console.log(item);
+   createGroup(Product: InvoiceDetail){
+    console.log(Product);
     return new FormGroup({
-      itemId: new FormControl(item.id),
-      itemName: new FormControl({ value: item.product?.name, disabled: true}, Validators.required),
-      quantity: new FormControl({ value: item.qty, disabled: true}, Validators.required),
-      discount: new FormControl({ value: item.discount, disabled: true}),
-      total: new FormControl({ value: this.calculateTotal(item), disabled: true}),
-      price: new FormControl({value: item.price, disabled:true}, Validators.required),
-      netAmount: new FormControl({value: this.calculateNet(item), disabled: true})
+      ProductId: new FormControl(Product.id),
+      ProductName: new FormControl({ value: Product.product?.name, disabled: true}, Validators.required),
+      quantity: new FormControl({ value: Product.qty, disabled: true}, Validators.required),
+      discount: new FormControl({ value: Product.discount, disabled: true}),
+      total: new FormControl({ value: this.calculateTotal(Product), disabled: true}),
+      price: new FormControl({value: Product.price, disabled:true}, Validators.required),
+      netAmount: new FormControl({value: this.calculateNet(Product), disabled: true})
     })
   }
 
@@ -159,10 +159,10 @@ export class InvoiceFormComponent implements OnInit,AfterViewInit,OnDestroy {
     this.active = false;
   }
 
-  calculateItemTotal(id: number) {
-    const item = this.invoiceItems[id];
-    const qty: number = item.qty || 0;
-    const price: number = item.price;
+  calculateProductTotal(id: number) {
+    const Product = this.invoiceProducts[id];
+    const qty: number = Product.qty || 0;
+    const price: number = Product.price;
     return qty * price;
   }
 }

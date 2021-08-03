@@ -1,12 +1,11 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit, Optional, ViewChild} from '@angular/core';
-import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from "@angular/forms";
-import {validateConstructorDependencies} from "@angular/compiler-cli/src/ngtsc/annotations/src/util";
+import {FormArray, FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatTable, MatTableDataSource} from "@angular/material/table";
-import {Category, CategoryLookup} from "../services/category.model";
+import {CategoryLookup} from "../services/category.model";
 import {MatPaginator} from "@angular/material/paginator";
-import {Item, ItemLookup} from "../services/item.model";
+import {ProductLookup} from "../services/product.model";
 import {EMPTY, Observable} from "rxjs";
-import {ItemsService} from "../services/items.service";
+import {ProductsService} from "../services/products.service";
 import {ToastrService} from "ngx-toastr";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {CategoryService} from "../services/category.service";
@@ -15,33 +14,35 @@ import {InvoiceService} from "../services/invoice.service";
 import {takeWhile} from "rxjs/operators";
 
 @Component({
-  selector: 'app-items-modal',
+  selector: 'app-Products-modal',
   templateUrl: './invoice-modal.component.html',
   styleUrls: ['./invoice-modal.component.scss'],
 
 })
 export class InvoiceModalComponent implements OnInit,AfterViewInit,OnDestroy {
   invoiceForm: FormGroup;
-  tableItems: InvoiceDetail[] = [];
- // invoiceDetails: Item[] = [];
+  tableProducts: InvoiceDetail[] = [];
+ // invoiceDetails: Product[] = [];
 
-  dataSource: MatTableDataSource<InvoiceDetail> = new MatTableDataSource<InvoiceDetail>(this.tableItems);
+  dataSource: MatTableDataSource<InvoiceDetail> = new MatTableDataSource<InvoiceDetail>(this.tableProducts);
   displayedColumns=['name','price','quantity','discount','net', 'edit', 'delete'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatTable) table: MatTable<any>;
   categories$: Observable<CategoryLookup[]>;
-  items$: Observable<ItemLookup[]> = EMPTY;
-  public invoiceItems: InvoiceDetail[] = [];
+  Products$: Observable<ProductLookup[]> = EMPTY;
+  public invoiceProducts: InvoiceDetail[] = [];
   private netAmount: number = 0;
   private totalPrice: number = 0;
   invoiceTotalAmount: number = 0;
   invoiceTotalDiscount: number = 0;
   private active: boolean = true;
+  private currentInvoice: Invoice =  <Invoice>{};
+  private formType: string = 'create';
   ngAfterViewInit() {
   }
 
   constructor(@Optional() @Inject(MAT_DIALOG_DATA) private data: any,
-                private itemsService: ItemsService,
+                private ProductsService: ProductsService,
                 private invoiceService: InvoiceService,
                 private categoryService: CategoryService,
                 private toastr: ToastrService,
@@ -53,17 +54,20 @@ export class InvoiceModalComponent implements OnInit,AfterViewInit,OnDestroy {
       description: new FormControl(data?.invoice?.description, Validators.required),
       category: new FormControl(data?.category, Validators.required),
       issuedOn: new FormControl(data?.invoice?.invoiceDate, Validators.required),
-      itemName: new FormControl('', Validators.required),
+      ProductName: new FormControl('', Validators.required),
       quantity: new FormControl('', Validators.required),
       discount: new FormControl(),
       price: new FormControl({value: '', disabled:true}, Validators.required),
       invoiceDetails: new FormArray([])
     });
     this.categories$ = <Observable<CategoryLookup[]>>data.categories;
-
+    this.currentInvoice = data.invoice;
+    (typeof data.formType !== 'undefined') && (this.formType = data.formType);
   }
 
   ngOnInit(): void {
+    this.loadData();
+
   }
   get customerName() {
     return this.invoiceForm.get('customerName') as FormControl;
@@ -84,8 +88,8 @@ get issuedOn() {
 get quantity() {
     return this.invoiceForm.get('quantity') as FormControl;
 }
-get itemName() {
-    return this.invoiceForm.get('itemName') as FormControl;
+get ProductName() {
+    return this.invoiceForm.get('ProductName') as FormControl;
 }
 get discount() {
     return this.invoiceForm.get('discount') as FormControl;
@@ -95,6 +99,13 @@ get invoiceDetails() {
 }
 get invoiceDetailsControlsList(){
     return this.invoiceDetails.controls as FormGroup[];
+}
+patchValue(entity: any, newEntity: any) : any {
+    let keys = Object.keys(entity);
+    for(let key of keys) {
+      (newEntity[key] !== null) && (entity[key] = newEntity[key]);
+    }
+    return entity;
 }
   save() {
     let invoiceHeader: Invoice = <Invoice>{};
@@ -106,61 +117,94 @@ get invoiceDetailsControlsList(){
     invoiceHeader.categoryId = this.category.value.id;
     this.invoiceDetailsControlsList.forEach(a => {
       invoiceDetails.push({
-        productId: a.get('itemId')?.value,
+        productId: a.get('ProductId')?.value,
         price: a.get('price')?.value,
         qty: a.get('quantity')?.value,
         discount: a.get('discount')?.value,
         netAmount: a.get('netAmount')?.value,
-        name:a.get('itemName')?.value,
-        quantity: a.get('quantity')?.value
-      }); console.log("ITem id: " + a.get('itemId')?.value)
+        name:a.get('ProductName')?.value,
+        invoiceId: this.currentInvoice.id,
+        id: a.get('id')?.value
+      });
       invoiceHeader.netAmount += +a.get('netAmount')?.value;
     });
     invoiceHeader.invoiceDetails = invoiceDetails;
-    console.log(JSON.stringify(invoiceHeader))
-    this.invoiceService.addInvoice(invoiceHeader)
-      .pipe(takeWhile(()=>this.active))
-      .subscribe(ret => {
-          this.toastr.success('Invoice Creation successfully ', 'Created')
-          this.dialogRef.close();
-        },
-        err => {
-          this.toastr.error('Invoice Creation failed ', 'Create failed')
-        });
+    if(this.formType === 'create') {
+      console.log(JSON.stringify(invoiceHeader))
+      this.invoiceService.addInvoice(invoiceHeader)
+        .pipe(takeWhile(() => this.active))
+        .subscribe(ret => {
+            this.toastr.success('Invoice Creation successfully ', 'Created')
+            this.dialogRef.close();
+          },
+          err => {
+            this.toastr.error('Invoice Creation failed ', 'Create failed')
+          });
+    }else if(this.formType === 'update') {
+     this.currentInvoice =  this.patchValue(this.currentInvoice, invoiceHeader);
+      invoiceHeader.id = this.currentInvoice.id;
+      console.log(JSON.stringify(this.currentInvoice))
+
+      /*      this.invoiceService.updateInvoice(invoiceHeader.id, invoiceHeader)
+              .pipe(takeWhile(() => this.active))
+              .subscribe(ret => {
+                  this.toastr.success('Invoice updated successfully ', 'Update')
+                  this.dialogRef.close();
+                },
+                err => {
+                  this.toastr.error('Invoice Update failed ', 'Update failed')
+                });*/
+    }
   }
 
   close() {
 
   }
-  editItem(row: number) {}
+  editProduct(row: number) {}
 
-  deleteItem(id: number) {
+  deleteProduct(id: number) {
 
   }
+  loadData() {
+        this.category.setValue(this.currentInvoice.category);
+        this.issuedOn.setValue(this.currentInvoice.invoiceDate);
+        this.customerName.setValue(this.currentInvoice.customerName);
+        this.currentInvoice.invoiceDetails.forEach(a => {
+          this.invoiceDetailsControlsList.push(this.createGroup(a))
+          this.invoiceTotalAmount += a.netAmount;
+          this.invoiceTotalDiscount += a.discount;
+          console.log(a.invoiceId);
+          this.invoiceProducts.push(a);
+          console.log(`InvoiceID: ${a.invoiceId}`)
+        });
+      this.updateProductAutocomplete()
+  }
 
-  calculateNet(item: InvoiceDetail): number {
+  calculateNet(Product: InvoiceDetail): number {console.log(`Product: ${JSON.stringify(Product)}`)
     // @ts-ignore
-    let i = item.price * item.quantity - (item.discount * item.quantity * item.price / 100);
+    let i = Product.price * Product.qty - (Product.discount * Product.qty * Product.price / 100);
     return i;
   }
   displayName(categoryLookup:CategoryLookup): string {
     return categoryLookup !== null ? categoryLookup.name : '';
   }
 
-  addItem() {
+  addProduct() {
     try {
-      let item = <InvoiceDetail>{};
-      item.id = this.itemName.value.id;
-      item.name = this.itemName.value.name;
-      item.price = +this.price.value;
-      item.quantity = +this.quantity.value;
-      item.discount = +this.discount.value;
-      item.netAmount =this.calculateNet(item);
-      this.invoiceDetails.controls.push(this.createGroup(item));
-      this.invoiceItems.push(item);
-      this.invoiceTotalAmount += item.netAmount;
-      this.invoiceTotalDiscount += item.discount;
-      this.itemName.reset();
+      let Product = <InvoiceDetail>{};
+      Product.id = this.ProductName.value.id;
+      Product.name = this.ProductName.value.name;
+      Product.price = +this.price.value;
+      Product.qty = +this.quantity.value;
+      Product.discount = +this.discount.value;
+      Product.netAmount = this.calculateNet(Product);
+      this.invoiceDetails.controls.push(this.createGroup(Product));
+      this.invoiceProducts.push(Product);
+      this.invoiceTotalAmount += Product.netAmount;
+      this.invoiceTotalDiscount += Product.discount;
+      if(this.formType === 'update')
+        Product.invoiceId = this.currentInvoice.id;
+      this.ProductName.reset();
       this.price.reset();
       this.discount.reset();
       this.quantity.reset();
@@ -169,30 +213,31 @@ get invoiceDetailsControlsList(){
 
     }
     }
-  createGroup(item: InvoiceDetail){
+  createGroup(Product: InvoiceDetail){
     return new FormGroup({
-      itemId: new FormControl(item.id),
-      itemName: new FormControl(item.name, Validators.required),
-      quantity: new FormControl(item.quantity, Validators.required),
-      discount: new FormControl(item.discount),
-      price: new FormControl({value: item.price, disabled:true}, Validators.required),
-      netAmount: new FormControl({value: this.calculateNet(item), disabled: true})
+      id: new FormControl({value: Product.id, hidden:true}),
+      ProductId: new FormControl(Product.id),
+      ProductName: new FormControl(Product.name, Validators.required),
+      quantity: new FormControl(Product.qty, Validators.required),
+      discount: new FormControl(Product.discount),
+      price: new FormControl({value: Product.price, disabled:true}, Validators.required),
+      netAmount: new FormControl({value: this.calculateNet(Product), disabled: true})
     })
   }
-  updateItemAutocomplete() {
+  updateProductAutocomplete() {
     console.log(this.category.value.id);
-    (typeof this.category.value.id !== 'undefined' ) && (this.items$ = this.categoryService.getItems(this.category.value.id));
+    (typeof this.category.value.id !== 'undefined' ) && (this.Products$ = this.categoryService.getProducts(this.category.value.id));
   }
 
   fetchPrice() {
-    if(this.itemName.value !== null)
-      this.itemsService.getItemById(this.itemName.value.id).subscribe(d => {
+    if(this.ProductName.value !== null)
+      this.ProductsService.getProductById(this.ProductName.value.id).subscribe(d => {
       this.price.setValue(d.price);
     })
   }
 
-  removeItem(id: number) {
-    this.invoiceItems.splice(id,1);
+  removeProduct(id: number) {
+    this.invoiceProducts.splice(id,1);
     let netAmount = +this.invoiceDetailsControlsList[id]?.get('netAmount')?.value;
     (this.invoiceTotalAmount  > 0) && (this.invoiceTotalAmount -= netAmount);
     let totalDiscount = +this.invoiceDetailsControlsList[id]?.get('discount')?.value;
@@ -205,10 +250,15 @@ get invoiceDetailsControlsList(){
     this.active = false;
   }
 
-  calculateItemTotal(id: number) {
-    const item = this.invoiceItems[id];
-    const qty: number = item.quantity || 0;
-    const price: number = item.price;
+  calculateProductTotal(id: number) {
+    const Product = this.invoiceProducts[id];
+    const qty: number = Product.qty || 0;
+    const price: number = Product.price;
     return qty * price;
+  }
+
+  quantityChanged(rowId: number) {
+    const quantityField = this.invoiceDetailsControlsList[rowId].get('quantity');
+    this.invoiceProducts[rowId].totalPrice = this.invoiceProducts[rowId].price * quantityField?.value;
   }
 }

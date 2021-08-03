@@ -81,8 +81,9 @@ export class InvoiceTableComponent implements OnInit, OnDestroy {
     this.categories$
       .subscribe(s => {
         category = s.find(c => c.id == invoice?.categoryId);
-        let data = {invoice,category, categories: this.categories$, formType: 'update'};console.log(invoice);
+        let data = {invoice,category, categories: this.categories$, formType: 'update'};
         this.openInvoiceDialog(data);
+        console.log(data)
       })
   }
   ngOnDestroy() {

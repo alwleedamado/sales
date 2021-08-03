@@ -38,7 +38,7 @@
       <table class="table table-responsive">
         <thead>
         <th>ID</th>
-        <th>Item Name</th>
+        <th>Product Name</th>
         <th>Quantity</th>
         <th>Price</th>
         <th>Total</th>
@@ -47,13 +47,13 @@
         </thead>
         <tbody>
         <tr *ngFor="let group  of invoiceDetailsControlsList;let i = index" [formGroup]="group">
-          <td><span>{{invoiceItems[i].id}}</span></td>
-          <td><span>{{invoiceItems[i]?.product?.name}}</span></td>
-          <td><span>{{invoiceItems[i].qty}}</span></td>
-          <td><span>{{invoiceItems[i].price}}</span></td>
-          <td>{{calculateItemTotal(i)}}</td>
-          <td><span>{{invoiceItems[i].discount}}</span></td>
-          <td>{{calculateNet(invoiceItems[i])}}</td>
+          <td><span>{{invoiceProducts[i].id}}</span></td>
+          <td><span>{{invoiceProducts[i]?.product?.name}}</span></td>
+          <td><span>{{invoiceProducts[i].qty}}</span></td>
+          <td><span>{{invoiceProducts[i].price}}</span></td>
+          <td>{{calculateProductTotal(i)}}</td>
+          <td><span>{{invoiceProducts[i].discount}}</span></td>
+          <td>{{calculateNet(invoiceProducts[i])}}</td>
         </tr>
         <tr>
           <td colspan="5"></td><td></td>

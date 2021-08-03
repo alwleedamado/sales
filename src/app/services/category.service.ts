@@ -3,7 +3,7 @@ import {Observable, throwError} from "rxjs";
 import {Category, CategoryLookup} from "./category.model";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {catchError, map} from "rxjs/operators";
-import {Item, ItemLookup} from "./item.model";
+import {Product, ProductLookup} from "./product.model";
 
 @Injectable()
 export class CategoryService {
@@ -41,9 +41,9 @@ export class CategoryService {
     return throwError(err);
   }
 
-  getItems(categoryId: number): Observable<ItemLookup[]> {
+  getProducts(categoryId: number): Observable<ProductLookup[]> {
     console.log(`${this.baseUrl}/ProductsByCategoryId/${categoryId}`)
-    return this.http.get<ItemLookup[]>(`${this.baseUrl}/ProductsByCategoryId/${categoryId}`)
+    return this.http.get<ProductLookup[]>(`${this.baseUrl}/ProductsByCategoryId/${categoryId}`)
       .pipe(
        map(l =>
            l.map(c => {
