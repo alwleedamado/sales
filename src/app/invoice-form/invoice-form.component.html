@@ -1,0 +1,73 @@
+<ng-container class='container'>
+  <ng-container [formGroup]="invoiceForm">
+    <h1 mat-dialog-title>Invoice</h1>
+    <div class="form-group">
+      <mat-form-field appearance="fill">
+        <mat-label>Invoice date</mat-label>
+        <input matInput [disabled]="true" [formControl]="issuedOn" [matDatepicker]="picker">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+
+      <mat-form-field class="ml-lg-4" appearance="fill">
+        <mat-label>Customer Name</mat-label>
+        <input [formControl]="customerName" matInput>
+        <mat-error></mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="ml-lg-4" appearance="fill">
+        <mat-label>Category</mat-label>
+        <input type="text"
+               placeholder="Pick one"
+               aria-labelledby="name"
+               matInput
+               [formControl]="category"
+               [matAutocomplete]="auto">
+        <mat-autocomplete  #auto="matAutocomplete" [displayWith]="displayName">
+          <mat-option  *ngFor="let option of categories$ | async" [value]="option">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <div style="border: 1px solid black"></div>
+
+    <div class="form-group">
+      <table class="table table-responsive">
+        <thead>
+        <th>ID</th>
+        <th>Item Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Discount</th>
+        <th>Net</th>
+        </thead>
+        <tbody>
+        <tr *ngFor="let group  of invoiceDetailsControlsList;let i = index" [formGroup]="group">
+          <td><span>{{invoiceItems[i].id}}</span></td>
+          <td><span>{{invoiceItems[i]?.product?.name}}</span></td>
+          <td><span>{{invoiceItems[i].qty}}</span></td>
+          <td><span>{{invoiceItems[i].price}}</span></td>
+          <td>{{calculateItemTotal(i)}}</td>
+          <td><span>{{invoiceItems[i].discount}}</span></td>
+          <td>{{calculateNet(invoiceItems[i])}}</td>
+        </tr>
+        <tr>
+          <td colspan="5"></td><td></td>
+        </tr>
+        </tbody>
+      </table>
+      <div style="border: 1px solid black; width: 100%"></div>
+
+      <div class="totals">
+        <span>Total Discount: {{invoiceTotalDiscount}}</span>
+        <br>
+        <span>  Total Amount: {{invoiceTotalAmount}}</span>
+      </div>
+    </div>
+
+  </ng-container>
+</ng-container>

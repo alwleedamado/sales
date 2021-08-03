@@ -34,6 +34,8 @@ import {HttpClientModule} from "@angular/common/http";
 import {MatSortModule} from "@angular/material/sort";
 import {CategoryService} from "./services/category.service";
 import {ItemsService} from "./services/items.service";
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
+import {InvoiceFormComponent} from "./invoice-form/invoice-form.component";
 
 @NgModule({
   declarations: [
@@ -45,7 +47,8 @@ import {ItemsService} from "./services/items.service";
     InvoiceModalComponent,
     DashboardComponent,
     InvoiceTableComponent,
-    NavComponent
+    NavComponent,
+    InvoiceFormComponent
 
   ],
   imports: [
@@ -54,6 +57,7 @@ import {ItemsService} from "./services/items.service";
       {path: 'categories', component: CategoriesTableComponent},
       {path: 'items', component: ItemsTableComponent},
       {path: 'invoices', component: InvoiceTableComponent},
+      {path:'invoices/:id',component:InvoiceFormComponent},
       {path:'**', redirectTo:'categories', pathMatch:'full'}
     ],{onSameUrlNavigation: 'reload'}),
     BrowserAnimationsModule,
@@ -76,7 +80,7 @@ import {ItemsService} from "./services/items.service";
     HttpClientModule,
     MatSortModule,
   ],
-  providers: [CategoryService,ItemsService],
+  providers: [CategoryService,ItemsService,    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

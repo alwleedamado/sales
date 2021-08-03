@@ -1,5 +1,28 @@
+/*
 mat-dialog-content {
   max-width: 640px;
   min-width: 480px;
   width: 640px;
+}
+*/
+.totals {
+  width: 100%;
+  margin-top: 20px;
+}
+span {
+  vertical-align: text-top;
+}
+
+table input[matInput] {
+  max-width: 45px;
+  margin-left: 20px;
+}
+td mat-icon {
+  alignment: center;
+  color: red;
+  cursor: pointer;
+}
+.number {
+  margin-left: 20px;
+  width: 120px;
 }

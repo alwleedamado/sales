@@ -14,9 +14,19 @@
         </mat-form-field>
     </div>
     <div class="form-group">
-      <mat-form-field appearance="fill">
+      <mat-form-field  appearance="fill">
         <mat-label>Category</mat-label>
-        <mat-select></mat-select>
+        <input type="text"
+               placeholder="Pick one"
+               aria-labelledby="name"
+               matInput
+               [formControl]="category"
+               [matAutocomplete]="auto">
+        <mat-autocomplete  #auto="matAutocomplete" [displayWith]="displayName">
+          <mat-option  *ngFor="let option of categories$ | async" [value]="option">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
       </mat-form-field>
     </div>
     <div class="form-group">

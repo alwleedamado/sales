@@ -9,7 +9,10 @@ import {openDialog} from "../dialog.utils";
 import {ItemsService} from "../services/items.service";
 import {ToastrService} from "ngx-toastr";
 import {MatPaginator} from "@angular/material/paginator";
-import {Category} from "../services/category.model";
+import {Category, CategoryLookup} from "../services/category.model";
+import {CategoryService} from "../services/category.service";
+import {map} from "rxjs/operators";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-items-table',
@@ -18,15 +21,23 @@ import {Category} from "../services/category.model";
 })
 export class ItemsTableComponent implements OnInit {
   items: Item[] = [];
-  displayedColumns: string[] = ['name', 'description', 'price'];
+  displayedColumns: string[] = ['name', 'description', 'price','edit', 'delete'];
   dataSource: MatTableDataSource<Item> = new MatTableDataSource<Item>(this.items);
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  private categories$: Observable<CategoryLookup[]>;
 
 
   constructor(private itemService: ItemsService,
               private toastr: ToastrService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private categoryService: CategoryService) {
     this.paginator = <MatPaginator>{};
+    this.categories$ = this.categoryService.getAllCategories().pipe(
+      map<Category[], CategoryLookup[]>(cat =>
+        cat.map<CategoryLookup>(c => {
+          return <CategoryLookup>{id: c.id, name: c.name};
+        }))
+    );
   }
 
   ngOnInit(): void {
@@ -37,10 +48,12 @@ export class ItemsTableComponent implements OnInit {
       },
       err =>{
         console.error(err);
-      })
+      });
+
   }
 
   openItemsDialog(data?: any) {
+
    openDialog(this.dialog, ItemsModalComponent,data);
   }
 
@@ -54,7 +67,20 @@ export class ItemsTableComponent implements OnInit {
   }
 
   editItem(id:number) {
+
     let item = this.items.find(m => m.id == id);
-    this.openItemsDialog(item);
+    let category : CategoryLookup | undefined;
+    this.categories$
+      .subscribe(s => {
+        category = s.find(c => c.id == item?.categoryId);
+        let data = {item,category, categories: this.categories$, formType: 'update'};console.log(category)
+        this.openItemsDialog(data);
+      })
+
+  }
+
+  addNewItem() {
+    let data = {categories: this.categories$};
+    this.openItemsDialog(data);
   }
 }

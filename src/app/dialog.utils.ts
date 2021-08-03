@@ -9,7 +9,7 @@ export function openDialog(dialog: MatDialog,dialogComponent: ComponentType<any>
   if(typeof data !== 'undefined') {
     console.log(data);
     dialogConfig.data = data;
-    dialogConfig.data.formType = 'update';
+    dialogConfig.data.formType = data.formType || 'update';
     dialogConfig.closeOnNavigation = false;
     dialogConfig.disableClose = true;
     return dialog.open(dialogComponent, dialogConfig);

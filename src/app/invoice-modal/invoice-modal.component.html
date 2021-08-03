@@ -4,98 +4,97 @@
 <div class="form-group">
     <mat-form-field appearance="fill">
       <mat-label>Choose a date</mat-label>
-      <input matInput [matDatepicker]="picker">
+      <input matInput [formControl]="issuedOn" [matDatepicker]="picker">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
-  <mat-form-field style="float: right;" appearance="fill">
-      <mat-label>Choose Item</mat-label>
-      <mat-autocomplete #auto="matAutocomplete">
-        <!-- <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-           {{option}}
-         </mat-option>-->
-      </mat-autocomplete>
+
+
+  <mat-form-field class="ml-lg-4" appearance="fill">
+    <mat-label>Customer Name</mat-label>
+    <input [formControl]="customerName" matInput>
+    <mat-error></mat-error>
+  </mat-form-field>
+  <mat-form-field class="ml-lg-4" appearance="fill">
+    <mat-label>Category</mat-label>
+    <input type="text"
+           placeholder="Pick one"
+           aria-labelledby="name"
+           matInput
+           [formControl]="category"
+           (ngModelChange)="updateItemAutocomplete()"
+           [matAutocomplete]="auto">
+    <mat-autocomplete  #auto="matAutocomplete" [displayWith]="displayName">
+      <mat-option  *ngFor="let option of categories$ | async" [value]="option">
+        {{option.name}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+  </div>
+    <mat-divider></mat-divider>
+<div class="form-group mb-lg-4">
+    <mat-form-field  appearance="fill">
+      <mat-label>Item Name</mat-label>
       <input type="text"
-             placeholder="Choose a Item"
-             aria-label="text"
+             placeholder="Pick one"
+             aria-labelledby="name"
              matInput
              [formControl]="itemName"
-             [matAutocomplete]="auto">
+             (ngModelChange)="fetchPrice()"
+
+             [matAutocomplete]="autoItem">
+      <mat-autocomplete  #autoItem="matAutocomplete" [displayWith]="displayName">
+        <mat-option  *ngFor="let option of items$ | async" [value]="option">
+          {{option.name}}
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
-  </div>
+    <mat-form-field disabled="true" class="number" appearance="legacy">
+      <mat-label>Price</mat-label>
+      <input  matInput [formControl]="price">
+      <span matSuffix>$</span>
+    </mat-form-field>
+    <mat-form-field class="number" appearance="legacy">
+      <mat-label>Quantity</mat-label>
+      <input matInput    [formControl]="quantity">
+    </mat-form-field>
+    <mat-form-field class="number" appearance="legacy">
+      <mat-label>Discount</mat-label>
+      <input matInput  [formControl]="discount">
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="addItem()"><mat-icon>add</mat-icon></button>
+</div>
     <div class="form-group">
-      <mat-form-field appearance="fill">
-        <mat-label>Customer Name</mat-label>
-        <input [formControl]="customerName" matInput>
-        <mat-error></mat-error>
-      </mat-form-field>
-      </div>
-    <div class="form-group">
-        <mat-form-field disabled="true" class="m-lg-2" appearance="fill">
-          <mat-label>Price</mat-label>
-          <input  matInput [formControl]="price">
-          <span matSuffix>$</span>
-        </mat-form-field>
-      <mat-form-field class='col-lg-2' appearance="fill">
-        <mat-label>Quantity</mat-label>
-        <input matInput [formControl]="quantity">
-      </mat-form-field>
-      <mat-form-field class='col-lg-2' appearance="fill">
-        <mat-label>Discount</mat-label>
-        <input matInput  [formControl]="quantity">
-      </mat-form-field>
-    </div>
-    <div class="form-group">
-      <mat-form-field class='col-lg-12' appearance="fill">
-        <mat-label>Description</mat-label>
-        <textarea [formControl]="description" matInput></textarea>
-      </mat-form-field>
-    </div>
-
-    <div class="form-group">
-      <table class="table table-responsive" mat-table matSort [dataSource]='dataSource'>
-        <ng-container matColumnDef="name">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef> Name </th>
-          <td mat-cell *matCellDef="let item"> {{item.name}} </td>
-        </ng-container>
-        <ng-container matColumnDef="price">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef> price </th>
-          <td mat-cell *matCellDef="let item"> {{item.price}} </td>
-        </ng-container>
-        <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef> Description </th>
-          <td mat-cell *matCellDef="let item"> {{ item.description }}</td>
-        </ng-container>
-        <ng-container matColumnDef="quantity">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef> Quantity </th>
-          <td mat-cell *matCellDef="let item"> {{item.quantity}} </td>
-        </ng-container>
-        <ng-container matColumnDef="discount">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef> Discount </th>
-          <td mat-cell *matCellDef="let item"> {{item.discount}} </td>
-        </ng-container>
-        <ng-container matColumnDef="net">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef> Net </th>
-          <td mat-cell *matCellDef="let item"> {{calculateNet(item.id)}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="edit">
-          <th mat-header-cell *matHeaderCellDef> Edit </th>
-          <td mat-cell *matCellDef="let item"> <button (click)="editItem(item.id)" mat-flat-button color="primary">
-            Edit
-          </button> </td>
-        </ng-container>
-        <ng-container matColumnDef="delete">
-          <th mat-header-cell *matHeaderCellDef> Delete </th>
-          <td mat-cell *matCellDef="let item"> <button mat-flat-button (click)="deleteItem(item.id)" class="btn btn-danger">
-            Delete
-          </button> </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <table class="table">
+        <thead>
+        <th>ID</th>
+        <th>Item Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Discount</th>
+        <th>Net</th>
+        <th>Delete</th>
+        </thead>
+        <tbody>
+        <tr *ngFor="let group  of invoiceDetailsControlsList;let i = index" [formGroup]="group">
+          <td><span>{{invoiceItems[i].id}}</span></td>
+          <td><span>{{invoiceItems[i].name}}</span></td>
+          <td><input matInput formControlName="quantity"></td>
+          <td><span>{{invoiceItems[i].price}}</span></td>
+          <td>{{calculateItemTotal(i)}}</td>
+          <td><input matInput formControlName="discount"></td>
+          <td>{{calculateNet(invoiceItems[i])}}</td>
+          <td><mat-icon (click)="removeItem(i)">delete</mat-icon></td>
+        </tr>
+        </tbody>
       </table>
-      <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+      <mat-divider [inset]="true"></mat-divider>
+      <div class="totals">
+
+        <p>Total Discount: {{invoiceTotalDiscount}}</p>
+        <p>Total Amount: {{invoiceTotalAmount}}</p>
+      </div>
     </div>
 
   </mat-dialog-content>

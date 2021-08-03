@@ -1,8 +1,9 @@
 import {Injectable} from "@angular/core";
 import {Observable, throwError} from "rxjs";
-import {Category} from "./category.model";
+import {Category, CategoryLookup} from "./category.model";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {catchError} from "rxjs/operators";
+import {catchError, map} from "rxjs/operators";
+import {Item, ItemLookup} from "./item.model";
 
 @Injectable()
 export class CategoryService {
@@ -38,5 +39,16 @@ export class CategoryService {
 
   private static handleError(err: any, caught:Observable<any>) : Observable<any>{
     return throwError(err);
+  }
+
+  getItems(categoryId: number): Observable<ItemLookup[]> {
+    console.log(`${this.baseUrl}/ProductsByCategoryId/${categoryId}`)
+    return this.http.get<ItemLookup[]>(`${this.baseUrl}/ProductsByCategoryId/${categoryId}`)
+      .pipe(
+       map(l =>
+           l.map(c => {
+             return <CategoryLookup>{id: c.id, name: c.name};
+           }))
+        ,catchError(CategoryService.handleError));
   }
 }

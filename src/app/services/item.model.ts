@@ -1,7 +1,14 @@
 export interface Item {
-  id: number;
+  id?: number;
   description: string;
   categoryId?: number;
-  totalPrice: number;
+  price: number;
   quantity?: number;
+  name: string;
+  discount: number;
+  netAmount: number;
+}
+export interface ItemLookup {
+  id: number;
+  name: string;
 }
