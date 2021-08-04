@@ -26,13 +26,13 @@ export class ProductsModalComponent implements OnInit, OnDestroy {
               private toastr: ToastrService,
               public dialogRef: MatDialogRef<ProductsModalComponent>) {
     this.itemForm = new FormGroup({
-      name: new FormControl(data?.item.name, Validators.required),
-      description: new FormControl(data?.item.description, Validators.required),
-      price: new FormControl(data.item.price, [Validators.required, Validators.pattern('[0-9]+\.{1}(?:[0-9\.]{2}){1}')]),
+      name: new FormControl(data?.item?.name, Validators.required),
+      description: new FormControl(data?.item?.description, Validators.required),
+      price: new FormControl(data.item?.price, [Validators.required, Validators.pattern('[0-9]+\.{1}(?:[0-9\.]{2}){1}')]),
       category: new FormControl(data.category, Validators.required)
     })
-    this.formType = 'update';
-    this.itemId = data?.item.id;
+    this.formType = data.formType;
+    (( data.formType === 'update') && (this.itemId = data?.item.id) || (this.itemId = 0));
     this.categories$ = <Observable<CategoryLookup[]>>data.categories;
   }
 

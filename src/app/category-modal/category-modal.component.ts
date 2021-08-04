@@ -38,6 +38,7 @@ export class CategoryModalComponent implements OnInit {
         .subscribe(ret => {
           this.toastr.success('Category updated successfully ', 'Update')
           this.dialogRef.close();
+            setTimeout(() =>window.location.href = '/categories', 700);
         },
         err => {
           this.toastr.error('Category Update failed ', 'Update failed')
@@ -48,6 +49,7 @@ export class CategoryModalComponent implements OnInit {
         .subscribe(ret => {
             this.toastr.success('Category Created successfully ', 'Creation')
             this.dialogRef.close();
+            setTimeout(() =>window.location.href = '/categories', 700);
           },
           err => {
             this.toastr.error('Category Creation failed ', 'Creation failed')

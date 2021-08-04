@@ -60,7 +60,7 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
        ;
         },
         err => {
-          this.toastr.error('Category deletion failed ', 'Deletion failed', {timeOut: 300});
+          this.toastr.error('Category deletion failed ', 'Cannot delete category that has products in it', {timeOut: 1500});
           setTimeout(() =>window.location.href = '/categories', 700);
         });
   }

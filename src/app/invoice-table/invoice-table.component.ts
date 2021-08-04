@@ -55,7 +55,8 @@ export class InvoiceTableComponent implements OnInit, OnDestroy {
   }
 
   createInvoice() {
-    let data = {categories: this.categories$};
+
+    let data = {categories: this.categories$, formType: 'create'};
     this.openInvoiceDialog(data);
   }
 

@@ -16,7 +16,7 @@ export interface Invoice {
 export interface InvoiceDetail {
   totalPrice?: number;
   name?: string;
-  id: number;
+  id?: number;
   productId: number;
   price: number;
   qty: number;

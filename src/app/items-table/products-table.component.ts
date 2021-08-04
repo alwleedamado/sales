@@ -11,6 +11,7 @@ import {map} from "rxjs/operators";
 import {Observable} from "rxjs";
 import {ProductsService} from "../services/products.service";
 import {ProductsModalComponent } from '../items-modal/products-modal.component';
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-Products-table',
@@ -22,7 +23,9 @@ export class ProductsTableComponent implements OnInit {
   displayedColumns: string[] = ['name', 'description', 'price','edit', 'delete'];
   dataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>(this.Products);
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  private categories$: Observable<CategoryLookup[]>;
+  public categories$: Observable<CategoryLookup[]>;
+  private invoiceForm: FormGroup;
+  public flitteredProducts: Product[] = [];
 
   constructor(private ProductService: ProductsService,
               private toastr: ToastrService,
@@ -35,11 +38,19 @@ export class ProductsTableComponent implements OnInit {
           return <CategoryLookup>{id: c.id, name: c.name};
         }))
     );
+    this.invoiceForm = new FormGroup({
+      category: new FormControl()
+    })
+  }
+
+  get category() {
+    return this.invoiceForm.get('category') as FormControl;
   }
 
   ngOnInit(): void {
     this.ProductService.getAllProducts().subscribe(data => {
         this.Products = data;
+        this.flitteredProducts = data.filter(f => f.categoryId === 1);
         this.dataSource = new MatTableDataSource<Product>(this.Products);
         this.dataSource.paginator = this.paginator;
       },
@@ -59,6 +70,7 @@ export class ProductsTableComponent implements OnInit {
       .subscribe(data =>{
           this.toastr.success('Product deleted successfully ', 'Deletion', {timeOut: 300})
 
+
         },
         err => this.toastr.error('Product deletion failed ', 'Deletion failed'));
   }
@@ -77,7 +89,15 @@ export class ProductsTableComponent implements OnInit {
   }
 
   addNewProduct() {
-    let data = {categories: this.categories$};
+    let data = {categories: this.categories$, formType: 'create'};
     this.openProductsDialog(data);
+  }
+  displayName(categoryLookup: CategoryLookup): string {
+    return categoryLookup !== null ? categoryLookup.name : '';
+  }
+  updateProductsList() {
+    this.flitteredProducts = this.Products.filter(f => f.categoryId === this.category.value.id);
+    this.dataSource = new MatTableDataSource<Product>(this.flitteredProducts);
+
   }
 }

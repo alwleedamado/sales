@@ -39,7 +39,7 @@
              placeholder="Pick one"
              aria-labelledby="name"
              matInput
-             [formControl]="ProductName"
+             [formControl]="productName"
              (ngModelChange)="fetchPrice()"
 
              [matAutocomplete]="autoProduct">
@@ -78,13 +78,13 @@
         </thead>
         <tbody>
         <tr *ngFor="let group  of invoiceDetailsControlsList;let i = index" [formGroup]="group">
-          <td><span>{{invoiceProducts[i]?.product?.id}}</span></td>
-          <td><span>{{invoiceProducts[i]?.product?.name}}</span></td>
+          <td><span>{{invoiceProducts[i]?.productId}}</span></td>
+          <td><input matInput formControlName="productName"></td>
           <td><input matInput (change)="quantityChanged(i)" formControlName="quantity"></td>
           <td><span>{{invoiceProducts[i].price}}</span></td>
           <td>{{invoiceProducts[i].totalPrice}}</td>
-          <td><input matInput formControlName="discount"></td>
-          <td>{{calculateNet(invoiceProducts[i])}}</td>
+          <td><input matInput (change)="recalculateNet(invoiceProducts[i], i)" formControlName="discount"></td>
+          <td><input matInput  formControlName="netAmount"></td>
           <td><mat-icon (click)="removeProduct(i)">delete</mat-icon></td>
         </tr>
         </tbody>

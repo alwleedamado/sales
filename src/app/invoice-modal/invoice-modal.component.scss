@@ -12,9 +12,10 @@ mat-dialog-content {
 span {
   vertical-align: text-top;
 }
-
+table input[MatInput]:disabled {
+  color: black;
+}
 table input[matInput] {
-  max-width: 45px;
   margin-left: 20px;
 }
 td mat-icon {
