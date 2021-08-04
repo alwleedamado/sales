@@ -29,8 +29,7 @@ export class InvoiceTableComponent implements OnInit, OnDestroy {
   constructor(private invoiceService: InvoiceService,
               private categoryService: CategoryService,
               private toastr: ToastrService,
-              private router: Router,
-              private dialog: MatDialog) {
+              private router: Router) {
     this.paginator = <MatPaginator>{};
     this.categories$ = this.categoryService.getAllCategories().pipe(
       map<Category[], CategoryLookup[]>(cat =>
@@ -51,13 +50,11 @@ export class InvoiceTableComponent implements OnInit, OnDestroy {
   }
 
   openInvoiceDialog(data?: any) {
-  openDialog(this.dialog,InvoiceModalComponent,data);
+  //openDialog(this.dialog,InvoiceModalComponent,data);
   }
 
   createInvoice() {
-
-    let data = {categories: this.categories$, formType: 'create'};
-    this.openInvoiceDialog(data);
+    this.router.navigate(['/invoices/edit', 0]);
   }
 
   deleteInvoice(id: number) {

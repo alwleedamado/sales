@@ -1,17 +1,18 @@
-import {AfterViewInit, Component, Inject, OnDestroy, OnInit, Optional, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatTable, MatTableDataSource} from "@angular/material/table";
-import {CategoryLookup} from "../services/category.model";
+import {Category, CategoryLookup} from "../services/category.model";
 import {MatPaginator} from "@angular/material/paginator";
 import {Product, ProductLookup} from "../services/product.model";
 import {EMPTY, Observable} from "rxjs";
 import {ProductsService} from "../services/products.service";
 import {ToastrService} from "ngx-toastr";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {CategoryService} from "../services/category.service";
 import {Invoice, InvoiceDetail} from "../services/invoice.model";
 import {InvoiceService} from "../services/invoice.service";
-import {takeWhile} from "rxjs/operators";
+import {map, takeWhile} from "rxjs/operators";
+import {ActivatedRoute} from "@angular/router";
+import {FormType} from "../enums/formType";
 
 @Component({
   selector: 'app-Products-modal',
@@ -28,7 +29,7 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns = ['name', 'price', 'quantity', 'discount', 'net', 'edit', 'delete'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatTable) table: MatTable<any>;
-  categories$: Observable<CategoryLookup[]>;
+  categories$: Observable<CategoryLookup[]> = EMPTY;
   Products$: Observable<ProductLookup[]> = EMPTY;
   public invoiceProducts: InvoiceDetail[] = [];
   private netAmount: number = 0;
@@ -37,36 +38,52 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
   invoiceTotalDiscount: number = 0;
   private active: boolean = true;
   private currentInvoice: Invoice = <Invoice>{};
-  private readonly formType: string = 'create';
+  private formType: FormType = FormType.Create;
 
   ngAfterViewInit() {
   }
 
-  constructor(@Optional() @Inject(MAT_DIALOG_DATA) private data: any,
+  constructor(
               private ProductsService: ProductsService,
               private invoiceService: InvoiceService,
               private categoryService: CategoryService,
+              private activatedRoute: ActivatedRoute,
               private toastr: ToastrService,
-              public dialogRef: MatDialogRef<InvoiceModalComponent>) {
+              ) {
     this.paginator = <MatPaginator>{};
     this.table = <MatTable<any>>{};
     this.invoiceForm = new FormGroup({
-      customerName: new FormControl(data?.invoice?.customerName, Validators.required),
-      description: new FormControl(data?.invoice?.description, Validators.required),
-      category: new FormControl(data?.category, Validators.required),
-      issuedOn: new FormControl(data?.invoice?.invoiceDate || new Date(), Validators.required),
+      customerName: new FormControl('', Validators.required),
+      description: new FormControl('', Validators.required),
+      category: new FormControl('', Validators.required),
+      issuedOn: new FormControl( new Date(), Validators.required),
       productName: new FormControl('', Validators.required),
       quantity: new FormControl('', Validators.required),
       discount: new FormControl(),
       price: new FormControl({value: '', disabled: true}, Validators.required),
       invoiceDetails: new FormArray([])
     });
-    this.categories$ = <Observable<CategoryLookup[]>>data.categories;
-    this.currentInvoice = data.invoice;
-    (typeof data.formType !== 'undefined') && (this.formType = data.formType);
+
   }
 
   ngOnInit(): void {
+    this.categories$ = this.categoryService.getAllCategories().pipe(
+      map<Category[], CategoryLookup[]>(cat =>
+        cat.map<CategoryLookup>(c => {
+          return <CategoryLookup>{id: c.id, name: c.name};
+        }))
+    );
+    let id = this.activatedRoute.snapshot.params['id'];
+
+    if(id == 0)
+      this.formType = FormType.Create;
+    else {
+      console.log(id)
+      this.invoiceService.getInvoiceById(id).pipe().subscribe(data => {
+        this.currentInvoice = data;
+        this.formType = FormType.Edit;
+      })
+    }
     this.loadData();
 
   }
@@ -130,23 +147,22 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
         name: a.get('productName')?.value,
         invoiceId: this.currentInvoice?.id || 0,
       };
-      if (this.formType == 'update')
+      if (this.formType == FormType.Edit)
         invoiceDetail.id = a.get('id')?.value;
       invoiceDetails.push(invoiceDetail);
       invoiceHeader.netAmount += +a.get('netAmount')?.value;
     });
     invoiceHeader.invoiceDetails = invoiceDetails;
-    if (this.formType === 'create') {
+    if (this.formType === FormType.Create) {
       this.invoiceService.addInvoice(invoiceHeader)
         .pipe(takeWhile(() => this.active))
         .subscribe(ret => {
             this.toastr.success('Invoice Creation successfully ', 'Created')
-            this.dialogRef.close();
           },
           err => {
             this.toastr.error('Invoice Creation failed ', 'Create failed')
           });
-    } else if (this.formType === 'update') {
+    } else if (this.formType === FormType.Edit) {
       invoiceHeader.id = this.currentInvoice.id;
       console.log(JSON.stringify(invoiceHeader))
 
@@ -154,7 +170,6 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
         .pipe(takeWhile(() => this.active))
         .subscribe(ret => {
             this.toastr.success('Invoice updated successfully ', 'Update')
-            this.dialogRef.close();
           },
           err => {
             this.toastr.error('Invoice Update failed ', 'Update failed')
@@ -167,7 +182,7 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
   loadData() {
-    if (this.formType === 'update') {
+    if (this.formType === FormType.Edit) {
       console.log(this.currentInvoice)
       this.category.setValue(this.currentInvoice.category);
       this.issuedOn.setValue(this.currentInvoice.invoiceDate);
@@ -195,11 +210,10 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
   addProduct() {
     try {
       let invoiceDetail = <InvoiceDetail>{};
-      //invoiceDetail.id = this.currentInvoice.id || 0;
       invoiceDetail.productId = this.productName.value.id;
       if(invoiceDetail.product === undefined)
         invoiceDetail.product = <Product>{};
-      (invoiceDetail.product.name = this.productName.value.name);
+      invoiceDetail.product.name = this.productName.value.name;
       invoiceDetail.price = +this.price.value;
       invoiceDetail.qty = +this.quantity.value;
       invoiceDetail.discount = +this.discount.value;
@@ -220,15 +234,15 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  createGroup(product: InvoiceDetail) {
+  createGroup(invoiceDetail: InvoiceDetail) {
     return new FormGroup({
-      id: new FormControl(product.id),
-      productId: new FormControl(product.productId),
-      productName: new FormControl({value: product?.product?.name,disabled: true}, Validators.required),
-      quantity: new FormControl(product.qty, Validators.required),
-      discount: new FormControl(product.discount),
-      price: new FormControl({value: product.price, disabled: true}, Validators.required),
-      netAmount: new FormControl({value: product.netAmount, disabled: true})
+      id: new FormControl(invoiceDetail.id),
+      productId: new FormControl(invoiceDetail.productId),
+      productName: new FormControl({value: invoiceDetail?.product?.name,disabled: true}, Validators.required),
+      quantity: new FormControl(invoiceDetail.qty, Validators.required),
+      discount: new FormControl(invoiceDetail.discount),
+      price: new FormControl({value: invoiceDetail.price, disabled: true}, Validators.required),
+      netAmount: new FormControl({value: invoiceDetail.netAmount, disabled: true}),
     })
   }
 
@@ -289,5 +303,9 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private recalculateTotalTotal() {
     this.invoiceTotalAmount = this.invoiceProducts.map(i => i.netAmount).reduce((a, b) => a + b);
+  }
+
+  displayTitle() {
+    return this.formType === FormType.Edit ? 'Invoice (Edit)' : "Invoice Creation";
   }
 }

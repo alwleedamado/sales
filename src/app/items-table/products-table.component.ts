@@ -12,6 +12,9 @@ import {Observable} from "rxjs";
 import {ProductsService} from "../services/products.service";
 import {ProductsModalComponent } from '../items-modal/products-modal.component';
 import {FormControl, FormGroup} from "@angular/forms";
+import {MatSort} from "@angular/material/sort";
+import {DialogStatus} from "../enums/dialog-status.enum";
+import {FormType} from "../enums/formType";
 
 @Component({
   selector: 'app-Products-table',
@@ -20,9 +23,11 @@ import {FormControl, FormGroup} from "@angular/forms";
 })
 export class ProductsTableComponent implements OnInit {
   Products: Product[] = [];
-  displayedColumns: string[] = ['name', 'description', 'price','edit', 'delete'];
+  displayedColumns: string[] = ['name', 'category', 'price','edit', 'delete'];
   dataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>(this.Products);
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
   public categories$: Observable<CategoryLookup[]>;
   private invoiceForm: FormGroup;
   public flitteredProducts: Product[] = [];
@@ -32,6 +37,8 @@ export class ProductsTableComponent implements OnInit {
               private dialog: MatDialog,
               private categoryService: CategoryService) {
     this.paginator = <MatPaginator>{};
+    this.sort = <MatSort>{};
+
     this.categories$ = this.categoryService.getAllCategories().pipe(
       map<Category[], CategoryLookup[]>(cat =>
         cat.map<CategoryLookup>(c => {
@@ -53,6 +60,7 @@ export class ProductsTableComponent implements OnInit {
         this.flitteredProducts = data.filter(f => f.categoryId === 1);
         this.dataSource = new MatTableDataSource<Product>(this.Products);
         this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
       },
       err =>{
         console.error(err);
@@ -62,34 +70,46 @@ export class ProductsTableComponent implements OnInit {
 
   openProductsDialog(data?: any) {
 
-   openDialog(this.dialog, ProductsModalComponent,data);
+    openDialog(this.dialog, ProductsModalComponent, data).afterClosed()
+      .subscribe(ret => {
+        if(ret) {
+          if (ret === DialogStatus.updateSuccess)
+            this.toastr.success('Product Updated successfully ', 'Update', {timeOut: 1700});
+          else if (ret === DialogStatus.createSuccess)
+            this.toastr.success('Product Created successfully ', 'Create', {timeOut: 1700});
+          else if (ret === DialogStatus.updateFailed)
+            this.toastr.error('Product Updated Failed ', 'Update', {timeOut: 1700});
+          else if (ret === DialogStatus.createFailed)
+            this.toastr.error('Product Created Failed ', 'Create', {timeOut: 1700});
+        }
+        this.ngOnInit();
+      });
   }
 
   deleteProduct(id: number) {
     this.ProductService.deleteProduct(id)
       .subscribe(data =>{
-          this.toastr.success('Product deleted successfully ', 'Deletion', {timeOut: 300})
-
-
+          this.toastr.success('Product deleted successfully ', 'Deletion', {timeOut: 1700})
+          this.dataSource.data = this.dataSource.data.filter(x=>x.id != id)
         },
-        err => this.toastr.error('Product deletion failed ', 'Deletion failed'));
+        err => this.toastr.error('Cannot delete product that is a part of an invoice ', 'Deletion failed', {timeOut: 1700}));
   }
 
   editProduct(id:number) {
 
-    let Product = this.Products.find(m => m.id == id);
+    let product = this.Products.find(m => m.id == id);
     let category : CategoryLookup | undefined;
     this.categories$
       .subscribe(s => {
-        category = s.find(c => c.id == Product?.categoryId);
-        let data = {Product,category, categories: this.categories$, formType: 'update'};console.log(category)
+        category = s.find(c => c.id == product?.categoryId);
+        let data = {product,category, categories: this.categories$, formType: FormType.Edit};
         this.openProductsDialog(data);
-      })
+      }, err => this.toastr.error('Failed to fetch data from the server', 'Network Error'))
 
   }
 
   addNewProduct() {
-    let data = {categories: this.categories$, formType: 'create'};
+    let data = {categories: this.categories$, formType: FormType.Create};
     this.openProductsDialog(data);
   }
   displayName(categoryLookup: CategoryLookup): string {

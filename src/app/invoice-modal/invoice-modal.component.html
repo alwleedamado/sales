@@ -1,6 +1,7 @@
-<ng-container class='dialog-container'>
-  <mat-dialog-content [formGroup]="invoiceForm">
-    <h1 mat-dialog-title>Invoice</h1>
+<div class='container-fluid'>
+  <div class="form-row" [formGroup]="invoiceForm">
+    <h1 mat-dialog-title>{{displayTitle()}}</h1>
+
 <div class="form-group">
     <mat-form-field appearance="fill">
       <mat-label>Choose a date</mat-label>
@@ -9,8 +10,7 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
-
-  <mat-form-field class="ml-lg-4" appearance="fill">
+  <mat-form-field class="ml-lg-10" appearance="fill">
     <mat-label>Customer Name</mat-label>
     <input [formControl]="customerName" matInput>
     <mat-error></mat-error>
@@ -31,8 +31,10 @@
     </mat-autocomplete>
   </mat-form-field>
   </div>
+
     <mat-divider></mat-divider>
-<div class="form-group mb-lg-4">
+<div class="row mb-lg-4 ">
+  <div class="form-group">
     <mat-form-field  appearance="fill">
       <mat-label>Product Name</mat-label>
       <input type="text"
@@ -41,7 +43,6 @@
              matInput
              [formControl]="productName"
              (ngModelChange)="fetchPrice()"
-
              [matAutocomplete]="autoProduct">
       <mat-autocomplete  #autoProduct="matAutocomplete" [displayWith]="displayName">
         <mat-option  *ngFor="let option of Products$ | async" [value]="option">
@@ -63,6 +64,7 @@
       <input matInput  [formControl]="discount">
     </mat-form-field>
     <button mat-flat-button color="primary" (click)="addProduct()"><mat-icon>add</mat-icon></button>
+  </div>
 </div>
     <div class="form-group">
       <table class="table">
@@ -81,8 +83,8 @@
           <td><span>{{invoiceProducts[i]?.productId}}</span></td>
           <td><input matInput formControlName="productName"></td>
           <td><input matInput (change)="quantityChanged(i)" formControlName="quantity"></td>
-          <td><span>{{invoiceProducts[i].price}}</span></td>
-          <td>{{invoiceProducts[i].totalPrice}}</td>
+          <td><input matInput formControlName="price"></td>
+          <td>{{calculateProductTotal(i)}}</td>
           <td><input matInput (change)="recalculateNet(invoiceProducts[i], i)" formControlName="discount"></td>
           <td><input matInput  formControlName="netAmount"></td>
           <td><mat-icon (click)="removeProduct(i)">delete</mat-icon></td>
@@ -97,9 +99,9 @@
       </div>
     </div>
 
-  </mat-dialog-content>
-  <mat-dialog-actions>
+  </div>
+  <div class="actions">
     <button mat-flat-button (click)="save()" color="primary">Save</button>
-    <button mat-flat-button color="primary" (click)="close()" [mat-dialog-close]="true">Cancel</button>
-  </mat-dialog-actions>
-</ng-container>
+    <button mat-flat-button style="margin-left: 10px" color="primary" (click)="close()">Cancel</button>
+  </div>
+</div>

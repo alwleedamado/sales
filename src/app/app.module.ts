@@ -58,6 +58,7 @@ import {InvoiceFormComponent} from "./invoice-form/invoice-form.component";
       {path: 'items', component: ProductsTableComponent},
       {path: 'invoices', component: InvoiceTableComponent},
       {path:'invoices/:id',component:InvoiceFormComponent},
+      {path: 'invoices/edit/:id', component: InvoiceModalComponent},
       {path:'**', redirectTo:'categories', pathMatch:'full'}
     ],{onSameUrlNavigation: 'reload'}),
     BrowserAnimationsModule,

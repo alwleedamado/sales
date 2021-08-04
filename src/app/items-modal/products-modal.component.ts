@@ -1,13 +1,14 @@
 import {Component, Inject, OnDestroy, OnInit, Optional} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {CategoryService} from "../services/category.service";
 import {Observable} from "rxjs";
-import {Category, CategoryLookup} from "../services/category.model";
+import {CategoryLookup} from "../services/category.model";
 import {Product} from "../services/product.model";
 import {ProductsService} from "../services/products.service";
 import {ToastrService} from "ngx-toastr";
 import {takeWhile} from "rxjs/operators";
+import {FormType} from "../enums/formType";
+import {DialogStatus} from "../enums/dialog-status.enum";
 
 @Component({
   selector: 'app-items-modal',
@@ -16,9 +17,10 @@ import {takeWhile} from "rxjs/operators";
 })
 export class ProductsModalComponent implements OnInit, OnDestroy {
   itemForm: FormGroup;
-  formType: string = 'create';
+  formType: FormType = FormType.Create;
   categories$: Observable<CategoryLookup[]>;
   private itemId: number;
+
   private invoiceProducts: Product[] = [];
   private active: boolean = true;
   constructor(@Optional() @Inject(MAT_DIALOG_DATA) private data: any,
@@ -26,13 +28,13 @@ export class ProductsModalComponent implements OnInit, OnDestroy {
               private toastr: ToastrService,
               public dialogRef: MatDialogRef<ProductsModalComponent>) {
     this.itemForm = new FormGroup({
-      name: new FormControl(data?.item?.name, Validators.required),
-      description: new FormControl(data?.item?.description, Validators.required),
-      price: new FormControl(data.item?.price, [Validators.required, Validators.pattern('[0-9]+\.{1}(?:[0-9\.]{2}){1}')]),
-      category: new FormControl(data.category, Validators.required)
+      name: new FormControl(data?.product?.name, Validators.required),
+      description: new FormControl(data?.product?.description, Validators.required),
+      price: new FormControl(data.product?.price, [Validators.required, Validators.pattern('[0-9.]+')]),
+      category: new FormControl(data?.category, Validators.required)
     })
-    this.formType = data.formType;
-    (( data.formType === 'update') && (this.itemId = data?.item.id) || (this.itemId = 0));
+    this.formType = data?.formType;
+    (( data.formType === FormType.Edit) && (this.itemId = data?.product.id)) || (this.itemId = 0);
     this.categories$ = <Observable<CategoryLookup[]>>data.categories;
   }
 
@@ -59,40 +61,30 @@ get category() {
     item.name = this.name.value;
     item.price = this.price.value;
     item.categoryId = this.category.value.id;
-    item.description = this.description.value;
-    if(this.formType === 'create'){
-
+    if(this.formType === FormType.Create){
       this.itemsService.addProduct(item)
         .pipe(takeWhile(() => this.active))
         .subscribe(ret => {
-      this.toastr.success('Product Created successfully ', 'Creation')
-      this.dialogRef.close();
-    },
+      this.dialogRef.close(DialogStatus.createSuccess);
+        },
           error => {
-            this.toastr.success('Product creation failed ', 'updating')
-            this.dialogRef.close();
+            this.dialogRef.close(DialogStatus.createFailed);
           });
-    }else if(this.formType === 'update'){
+    }else if(this.formType === FormType.Edit){
       item.id = this.itemId;
       this.itemsService.updateProduct(item.id, item)
         .pipe(takeWhile(() => this.active))
         .subscribe(
         d => {
-          this.toastr.success('Product updated successfully ', 'updating')
-          this.dialogRef.close();
+          this.dialogRef.close(DialogStatus.updateSuccess);
         },
           error => {
-            this.toastr.success('Product updated failed ', 'updating')
-            this.dialogRef.close();
+            this.dialogRef.close(DialogStatus.updateFailed);
           });
     }
   }
 
-  close() {
-    if(this.itemForm.dirty || this.itemForm.touched) {
-      this.toastr.show('You will lose all you changes ', 'Unsaved changes');
-      this.dialogRef.close();
-    }  }
+  close() {}
 
   displayName(categoryLookup:CategoryLookup): string {
     return categoryLookup !== null ? categoryLookup.name : '';

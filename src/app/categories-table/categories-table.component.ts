@@ -10,6 +10,8 @@ import {CategoryMockService} from "../services/category.mock.service";
 import {CategoryService} from "../services/category.service";
 import {ScrollStrategyOptions} from "@angular/cdk/overlay";
 import {openDialog} from "../dialog.utils";
+import {DialogStatus} from "../enums/dialog-status.enum";
+import {FormType} from "../enums/formType";
 
 @Component({
   selector: 'app-categories-table',
@@ -34,20 +36,31 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
   }
 
   openCategoryDialog(data?: any) {
-    openDialog(this.dialog, CategoryModalComponent, data);
+    openDialog(this.dialog, CategoryModalComponent, data).afterClosed()
+      .subscribe(ret => {
+        if(ret) {
+          if (ret === DialogStatus.updateSuccess)
+            this.toastr.success('Category Updated successfully ', 'Update', {timeOut: 1700});
+          else if (ret === DialogStatus.createSuccess)
+            this.toastr.success('Category Created successfully ', 'Create', {timeOut: 1700});
+          else if (ret === DialogStatus.updateFailed)
+            this.toastr.error('Category Updated Failed ', 'Update', {timeOut: 1700});
+          else if (ret === DialogStatus.createFailed)
+            this.toastr.error('Category Created Failed ', 'Create', {timeOut: 1700});
+        }
+        this.ngOnInit();
+      });
   }
   editCategory(id: number) {
     let category = this.categories.find(m => m.id == id);
-    this.openCategoryDialog(category);
+    let data = {category, formType: FormType.Edit}
+    this.openCategoryDialog(data);
   }
   ngOnInit(): void {
     this.categoryService.getAllCategories().subscribe(data => {
       this.categories = data;
       this.dataSource = new MatTableDataSource<Category>(this.categories);
       this.dataSource.paginator = this.paginator;
-    },
-      err =>{
-      console.error(err);
       })
   }
 
@@ -56,12 +69,10 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit {
     this.categoryService.deleteCategory(id)
       .subscribe(data =>{
         this.toastr.success('Category deleted successfully ', 'Deletion', {timeOut: 300});
-      setTimeout(() =>window.location.href = '/categories', 700);
-       ;
+        this.dataSource.data = this.dataSource.data.filter((m:Category) => m.id != id);
         },
         err => {
           this.toastr.error('Category deletion failed ', 'Cannot delete category that has products in it', {timeOut: 1500});
-          setTimeout(() =>window.location.href = '/categories', 700);
         });
   }
 }

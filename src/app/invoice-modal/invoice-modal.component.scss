@@ -1,15 +1,11 @@
-/*
-mat-dialog-content {
-  max-width: 640px;
-  min-width: 480px;
-  width: 640px;
+mat-form-field {
+  margin-left: 48px;
 }
-*/
 .totals {
   width: 100%;
   margin-top: 20px;
 }
-span {
+td {
   vertical-align: text-top;
 }
 table input[MatInput]:disabled {
@@ -23,7 +19,4 @@ td mat-icon {
   color: red;
   cursor: pointer;
 }
-.number {
-  margin-left: 20px;
-  width: 120px;
-}
+

@@ -1,5 +1,7 @@
 <ng-container class='dialog-container'>
-  <mat-dialog-content [formGroup]="categoryForm">
+  <form  #tb (ngSubmit)="save()" [formGroup]="categoryForm">
+
+  <mat-dialog-content>
     <h1 mat-dialog-title>Category</h1>
   <div class="form-group">
     <mat-form-field appearance="fill">
@@ -15,7 +17,8 @@
     </div>
   </mat-dialog-content>
   <mat-dialog-actions>
-  <button mat-flat-button (click)="save()" color="primary">Save</button>
+  <button mat-flat-button type='submit' color="primary">Save</button>
   <button mat-flat-button color="primary" (click)="close()" [mat-dialog-close]="true">Cancel</button>
 </mat-dialog-actions>
+  </form>
 </ng-container>

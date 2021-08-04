@@ -1,9 +1,10 @@
 import {Component, Inject, OnInit, Optional} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {Category} from "../services/category.model";
 import {CategoryService} from "../services/category.service";
 import {ToastrService} from "ngx-toastr";
+import {DialogStatus} from "../enums/dialog-status.enum";
+import {FormType} from "../enums/formType";
 
 @Component({
   selector: 'app-category-modal',
@@ -12,17 +13,17 @@ import {ToastrService} from "ngx-toastr";
 })
 export class CategoryModalComponent implements OnInit {
   categoryForm: FormGroup;
+  formType: FormType = FormType.Create;
   constructor(
     public dialogRef: MatDialogRef<CategoryModalComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: any,
     private categoryService: CategoryService,
     private toastr: ToastrService) {
     this.categoryForm = new FormGroup({
-      name: new FormControl(data?.name, Validators.required),
-      description: new FormControl(data?.description, Validators.required)
+      name: new FormControl(data?.category?.name, Validators.required),
+      description: new FormControl(data?.category?.description, Validators.required)
     });
-
-    console.log(data);
+    this.formType = data?.formType;
   }
   get name() {
     return  this.categoryForm.get('name') as FormControl;
@@ -31,35 +32,31 @@ export class CategoryModalComponent implements OnInit {
     return  this.categoryForm.get('description') as FormControl;
   }
   save() {
-    let category = this.categoryForm.value;
-    if(this.data.formType == 'update') {
-      category.id = this.data?.id;
-      this.categoryService.updateCategory(this.data?.id, category)
-        .subscribe(ret => {
-          this.toastr.success('Category updated successfully ', 'Update')
-          this.dialogRef.close();
-            setTimeout(() =>window.location.href = '/categories', 700);
-        },
-        err => {
-          this.toastr.error('Category Update failed ', 'Update failed')
-        });
-    }else {
+    if(this.categoryForm.valid) {
       let category = this.categoryForm.value;
-      this.categoryService.addCategory(category)
-        .subscribe(ret => {
-            this.toastr.success('Category Created successfully ', 'Creation')
-            this.dialogRef.close();
-            setTimeout(() =>window.location.href = '/categories', 700);
-          },
-          err => {
-            this.toastr.error('Category Creation failed ', 'Creation failed')
-          });
+      if (this.data.formType == FormType.Edit) {
+        category.id = this.data?.category?.id;
+        this.categoryService.updateCategory(this.data?.category?.id, category)
+          .subscribe(ret => {
+              this.dialogRef.close(category.id);
+            },
+            err => {
+              this.dialogRef.close(DialogStatus.updateFailed)
+            });
+      } else {
+        let category = this.categoryForm.value;
+        this.categoryService.addCategory(category)
+          .subscribe(ret => {
+              this.dialogRef.close(DialogStatus.createSuccess);
+            },
+            err => {
+              this.dialogRef.close(DialogStatus.createFailed)
+            });
+      }
     }
   }
   close() {
-    if(this.categoryForm.dirty || this.categoryForm.touched) {
-      this.toastr.show('You will lose all you changes ', 'Unsaved changes');
-    }
+    this.dialogRef.close();
   }
   ngOnInit(): void {
 
