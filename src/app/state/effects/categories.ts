@@ -1,0 +1,2 @@
+export enum Categories {
+}

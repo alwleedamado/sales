@@ -3,7 +3,7 @@ import {FormArray, FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatTable, MatTableDataSource} from "@angular/material/table";
 import {CategoryLookup} from "../services/category.model";
 import {MatPaginator} from "@angular/material/paginator";
-import {Product, ProductLookup} from "../services/product.model";
+import {Product, ProductLookup} from '../services/product.model';
 import {EMPTY, Observable} from "rxjs";
 import {ProductsService} from "../services/products.service";
 import {ToastrService} from "ngx-toastr";
