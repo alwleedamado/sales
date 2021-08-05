@@ -10,7 +10,7 @@ import {CategoryService} from "../services/category.service";
 import {map} from "rxjs/operators";
 import {Observable} from "rxjs";
 import {ProductsService} from "../services/products.service";
-import {ProductsModalComponent } from '../items-modal/products-modal.component';
+import {ProductsModalComponent} from '../items-modal/products-modal.component';
 import {FormControl, FormGroup} from "@angular/forms";
 import {MatSort} from "@angular/material/sort";
 import {DialogStatus} from "../enums/dialog-status.enum";
@@ -23,7 +23,7 @@ import {FormType} from "../enums/formType";
 })
 export class ProductsTableComponent implements OnInit {
   Products: Product[] = [];
-  displayedColumns: string[] = ['name', 'category', 'price','edit', 'delete'];
+  displayedColumns: string[] = ['name', 'category', 'price', 'edit', 'delete'];
   dataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>(this.Products);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -62,7 +62,7 @@ export class ProductsTableComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       },
-      err =>{
+      err => {
         console.error(err);
       });
 
@@ -72,7 +72,7 @@ export class ProductsTableComponent implements OnInit {
 
     openDialog(this.dialog, ProductsModalComponent, data).afterClosed()
       .subscribe(ret => {
-        if(ret) {
+        if (ret) {
           if (ret === DialogStatus.updateSuccess)
             this.toastr.success('Product Updated successfully ', 'Update', {timeOut: 1700});
           else if (ret === DialogStatus.createSuccess)
@@ -87,22 +87,24 @@ export class ProductsTableComponent implements OnInit {
   }
 
   deleteProduct(id: number) {
-    this.ProductService.deleteProduct(id)
-      .subscribe(data =>{
-          this.toastr.success('Product deleted successfully ', 'Deletion', {timeOut: 1700})
-          this.dataSource.data = this.dataSource.data.filter(x=>x.id != id)
-        },
-        err => this.toastr.error('Cannot delete product that is a part of an invoice ', 'Deletion failed', {timeOut: 1700}));
+    let result = confirm("Confirm the deletion operation");
+    if (result)
+      this.ProductService.deleteProduct(id)
+        .subscribe(data => {
+            this.toastr.success('Product deleted successfully ', 'Deletion', {timeOut: 1700})
+            this.dataSource.data = this.dataSource.data.filter(x => x.id != id)
+          },
+          err => this.toastr.error('Cannot delete product that is a part of an invoice ', 'Deletion failed', {timeOut: 1700}));
   }
 
-  editProduct(id:number) {
+  editProduct(id: number) {
 
     let product = this.Products.find(m => m.id == id);
-    let category : CategoryLookup | undefined;
+    let category: CategoryLookup | undefined;
     this.categories$
       .subscribe(s => {
         category = s.find(c => c.id == product?.categoryId);
-        let data = {product,category, categories: this.categories$, formType: FormType.Edit};
+        let data = {product, category, categories: this.categories$, formType: FormType.Edit};
         this.openProductsDialog(data);
       }, err => this.toastr.error('Failed to fetch data from the server', 'Network Error'))
 
@@ -112,9 +114,11 @@ export class ProductsTableComponent implements OnInit {
     let data = {categories: this.categories$, formType: FormType.Create};
     this.openProductsDialog(data);
   }
+
   displayName(categoryLookup: CategoryLookup): string {
     return categoryLookup !== null ? categoryLookup.name : '';
   }
+
   updateProductsList() {
     this.flitteredProducts = this.Products.filter(f => f.categoryId === this.category.value.id);
     this.dataSource = new MatTableDataSource<Product>(this.flitteredProducts);

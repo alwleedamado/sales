@@ -18,7 +18,7 @@
   </mat-dialog-content>
   <mat-dialog-actions>
   <button mat-flat-button type='submit' color="primary">Save</button>
-  <button mat-flat-button color="primary" (click)="close()" [mat-dialog-close]="true">Cancel</button>
+  <button mat-flat-button [disabled]='categoryForm.invalid' color="primary" (click)="close()" [mat-dialog-close]="true">Cancel</button>
 </mat-dialog-actions>
   </form>
 </ng-container>

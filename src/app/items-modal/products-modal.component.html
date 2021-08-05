@@ -37,7 +37,7 @@
     </div>-->
   </mat-dialog-content>
   <mat-dialog-actions>
-    <button mat-flat-button (click)="save()" color="primary">Save</button>
+    <button mat-flat-button [disabled]='itemForm.invalid' (click)="save()" color="primary">Save</button>
     <button mat-flat-button color="primary" (click)="close()" [mat-dialog-close]="true">Cancel</button>
   </mat-dialog-actions>
 </ng-container>

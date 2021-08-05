@@ -101,7 +101,7 @@
 
   </div>
   <div class="actions">
-    <button mat-flat-button (click)="save()" color="primary">Save</button>
+    <button mat-flat-button [disabled]='invoiceForm.invalid' (click)="save()" color="primary">Save</button>
     <button mat-flat-button style="margin-left: 10px" color="primary" (click)="close()">Cancel</button>
   </div>
 </div>
