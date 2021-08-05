@@ -1,4 +1,4 @@
-<div class='container-fluid'>
+<div class='container'>
   <div class="form-row" [formGroup]="invoiceForm">
     <h1 mat-dialog-title>{{displayTitle()}}</h1>
 
@@ -91,9 +91,11 @@
         </tr>
         </tbody>
       </table>
+      <div class="error-msg alert-danger" *ngIf="invoiceForm.invalid && (invoiceForm.dirty || invoiceForm.touched)">
+        <span>You have to fill all required fields</span>
+      </div>
       <mat-divider [inset]="true"></mat-divider>
       <div class="totals">
-
         <p>Total Discount: {{invoiceTotalDiscount}}</p>
         <p>Total Amount: {{invoiceTotalAmount}}</p>
       </div>
@@ -101,7 +103,12 @@
 
   </div>
   <div class="actions">
-    <button mat-flat-button [disabled]='invoiceForm.invalid' (click)="save()" color="primary">Save</button>
+    <button mat-flat-button [disabled]='invoiceDetails.invalid && (invoiceDetails.dirty || invoiceDetails.touched)' (click)="save()" color="primary">
+      <mat-icon matPrefix *ngIf='!isLoading'>save</mat-icon>
+      <mat-icon>
+        <mat-spinner diameter='20' *ngIf="isLoading"></mat-spinner>
+      </mat-icon>
+      Save</button>
     <button mat-flat-button style="margin-left: 10px" color="primary" (click)="close()">Cancel</button>
   </div>
 </div>

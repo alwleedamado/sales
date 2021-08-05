@@ -23,13 +23,13 @@ export class ProductsModalComponent implements OnInit, OnDestroy {
 
   private invoiceProducts: Product[] = [];
   private active: boolean = true;
+  isLoading: boolean = false;
   constructor(@Optional() @Inject(MAT_DIALOG_DATA) private data: any,
               private itemsService: ProductsService,
               private toastr: ToastrService,
               public dialogRef: MatDialogRef<ProductsModalComponent>) {
     this.itemForm = new FormGroup({
       name: new FormControl(data?.product?.name, Validators.required),
-      description: new FormControl(data?.product?.description, Validators.required),
       price: new FormControl(data.product?.price, [Validators.required, Validators.pattern('[0-9.]+')]),
       category: new FormControl(data?.category, Validators.required)
     })

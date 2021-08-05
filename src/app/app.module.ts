@@ -36,6 +36,7 @@ import {CategoryService} from "./services/category.service";
 import {ProductsService} from "./services/products.service";
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
 import {InvoiceFormComponent} from "./invoice-form/invoice-form.component";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -51,36 +52,37 @@ import {InvoiceFormComponent} from "./invoice-form/invoice-form.component";
     InvoiceFormComponent,
 
   ],
-  imports: [
-    BrowserModule,
-    RouterModule.forRoot([
-      {path: 'categories', component: CategoriesTableComponent},
-      {path: 'items', component: ProductsTableComponent},
-      {path: 'invoices', component: InvoiceTableComponent},
-      {path:'invoices/:id',component:InvoiceFormComponent},
-      {path: 'invoices/edit/:id', component: InvoiceModalComponent},
-      {path:'**', redirectTo:'categories', pathMatch:'full'}
-    ],{onSameUrlNavigation: 'reload'}),
-    BrowserAnimationsModule,
-    MatNativeDateModule,
-    ToastrModule.forRoot(),
-    MatDatepickerModule,
-    MatButtonModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatSelectModule,
-    MatAutocompleteModule,
-    MatListModule,
-    MatSidenavModule,
-    LayoutModule,
-    MatToolbarModule,
-    MatIconModule,
-    HttpClientModule,
-    MatSortModule,
-  ],
+    imports: [
+        BrowserModule,
+        RouterModule.forRoot([
+            {path: 'categories', component: CategoriesTableComponent},
+            {path: 'items', component: ProductsTableComponent},
+            {path: 'invoices', component: InvoiceTableComponent},
+            {path: 'invoices/:id', component: InvoiceFormComponent},
+            {path: 'invoices/edit/:id', component: InvoiceModalComponent},
+            {path: '**', redirectTo: 'categories', pathMatch: 'full'}
+        ], {onSameUrlNavigation: 'reload'}),
+        BrowserAnimationsModule,
+        MatNativeDateModule,
+        ToastrModule.forRoot(),
+        MatDatepickerModule,
+        MatButtonModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatSelectModule,
+        MatAutocompleteModule,
+        MatListModule,
+        MatSidenavModule,
+        LayoutModule,
+        MatToolbarModule,
+        MatIconModule,
+        HttpClientModule,
+        MatSortModule,
+        MatProgressSpinnerModule,
+    ],
   providers: [CategoryService,ProductsService,    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}],
   bootstrap: [AppComponent]
 })

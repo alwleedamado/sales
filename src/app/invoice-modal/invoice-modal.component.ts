@@ -39,6 +39,7 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
   private active: boolean = true;
   private currentInvoice: Invoice = <Invoice>{};
   private formType: FormType = FormType.Create;
+  isLoading: boolean = false;
 
   ngAfterViewInit() {
   }
@@ -82,9 +83,9 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.invoiceService.getInvoiceById(id).pipe().subscribe(data => {
         this.currentInvoice = data;
         this.formType = FormType.Edit;
+        this.loadData();
       })
     }
-    this.loadData();
 
   }
 
@@ -183,7 +184,7 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   loadData() {
     if (this.formType === FormType.Edit) {
-      console.log(this.currentInvoice)
+      console.log(this.currentInvoice);
       this.category.setValue(this.currentInvoice.category);
       this.issuedOn.setValue(this.currentInvoice.invoiceDate);
       this.customerName.setValue(this.currentInvoice.customerName);
@@ -236,11 +237,11 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   createGroup(invoiceDetail: InvoiceDetail) {
     return new FormGroup({
-      id: new FormControl(invoiceDetail.id),
-      productId: new FormControl(invoiceDetail.productId),
+      id: new FormControl(invoiceDetail.id, Validators.required),
+      productId: new FormControl(invoiceDetail.productId, Validators.required),
       productName: new FormControl({value: invoiceDetail?.product?.name,disabled: true}, Validators.required),
       quantity: new FormControl(invoiceDetail.qty, Validators.required),
-      discount: new FormControl(invoiceDetail.discount),
+      discount: new FormControl(invoiceDetail.discount, Validators.required),
       price: new FormControl({value: invoiceDetail.price, disabled: true}, Validators.required),
       netAmount: new FormControl({value: invoiceDetail.netAmount, disabled: true}),
     })

@@ -13,6 +13,7 @@ import {FormType} from "../enums/formType";
 })
 export class CategoryModalComponent implements OnInit {
   categoryForm: FormGroup;
+  public isLoading = false;
   formType: FormType = FormType.Create;
   constructor(
     public dialogRef: MatDialogRef<CategoryModalComponent>,
@@ -33,11 +34,13 @@ export class CategoryModalComponent implements OnInit {
   }
   save() {
     if(this.categoryForm.valid) {
+      this.isLoading = true;
       let category = this.categoryForm.value;
       if (this.data.formType == FormType.Edit) {
         category.id = this.data?.category?.id;
         this.categoryService.updateCategory(this.data?.category?.id, category)
           .subscribe(ret => {
+            this.isLoading = false
               this.dialogRef.close(category.id);
             },
             err => {

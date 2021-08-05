@@ -12,6 +12,7 @@ import {openDialog} from "../dialog.utils";
 import {EMPTY, Observable} from "rxjs";
 import {CategoryService} from "../services/category.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {FormType} from "../enums/formType";
 
 @Component({
   selector: 'app-invoice-table',
@@ -79,8 +80,8 @@ export class InvoiceTableComponent implements OnInit, OnDestroy {
     this.categories$
       .subscribe(s => {
         category = s.find(c => c.id == invoice?.categoryId);
-        let data = {invoice,category, categories: this.categories$, formType: 'update'};
-        this.openInvoiceDialog(data);
+        let data = {invoice,category, categories: this.categories$, formType: FormType.Edit};
+        this.router.navigate(['/invoices','edit', id]);
         console.log(data)
       })
   }

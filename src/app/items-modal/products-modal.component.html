@@ -35,9 +35,17 @@
         <textarea [formControl]="description" matInput></textarea>
       </mat-form-field>
     </div>-->
+    <div class="error-msg alert-danger" *ngIf="itemForm.invalid && (itemForm.touched || itemForm.dirty)">
+      <span><mat-icon>alert</mat-icon>You have to fill all required fields</span>
+    </div>
   </mat-dialog-content>
   <mat-dialog-actions>
-    <button mat-flat-button [disabled]='itemForm.invalid' (click)="save()" color="primary">Save</button>
+    <button mat-flat-button [disabled]='itemForm.invalid' (click)="save()" color="primary">
+      <mat-icon matPrefix *ngIf='!isLoading'>save</mat-icon>
+      <mat-icon>
+        <mat-spinner diameter='20' *ngIf="isLoading"></mat-spinner>
+      </mat-icon>
+      Save</button>
     <button mat-flat-button color="primary" (click)="close()" [mat-dialog-close]="true">Cancel</button>
   </mat-dialog-actions>
 </ng-container>

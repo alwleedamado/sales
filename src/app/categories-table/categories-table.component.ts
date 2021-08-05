@@ -10,6 +10,7 @@ import {CategoryService} from "../services/category.service";
 import {openDialog} from "../dialog.utils";
 import {DialogStatus} from "../enums/dialog-status.enum";
 import {FormType} from "../enums/formType";
+import {MatSort} from "@angular/material/sort";
 
 @Component({
   selector: 'app-categories-table',
@@ -18,20 +19,26 @@ import {FormType} from "../enums/formType";
 })
 export class CategoriesTableComponent implements OnInit, AfterViewInit {
   private categories: Category[] = [];
+  public isLoading = true;
   dataSource: MatTableDataSource<Category> = new MatTableDataSource<Category>(this.categories);
   displayedColumns = ['name', 'description', 'edit', 'delete'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
-
+  @ViewChild(MatSort) sort: MatSort;
   constructor(private toastr: ToastrService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
               private dialog: MatDialog,
               private categoryService: CategoryService) {
     this.paginator = <MatPaginator>{};
+    this.sort = <MatSort>{};
+    this.dataSource = new MatTableDataSource<Category>(this.categories);
+
+
   }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   openCategoryDialog(data?: any) {
@@ -58,10 +65,11 @@ export class CategoriesTableComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.isLoading = false;
     this.categoryService.getAllCategories().subscribe(data => {
-      this.categories = data;
-      this.dataSource = new MatTableDataSource<Category>(this.categories);
-      this.dataSource.paginator = this.paginator;
+      this.isLoading = false
+      this.dataSource.data = data;
+      this.categories = data
     })
   }
 
@@ -77,5 +85,15 @@ export class CategoriesTableComponent implements OnInit, AfterViewInit {
           err => {
             this.toastr.error('Category deletion failed ', 'Cannot delete category that has products in it', {timeOut: 1500});
           });
+  }
+
+  applyFilter($event: KeyboardEvent) {
+    // @ts-ignore
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 }

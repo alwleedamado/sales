@@ -1,9 +1,16 @@
 <div class="container">
   <a mat-flat-button id="open-dialog" color="primary" (click)="openCategoryDialog()">Add New Category</a>
+  <mat-form-field appearance="standard">
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex: Car" #input>
+  </mat-form-field>
   <div class="mat-elevation-z1">
-    <table class="table table-responsive" mat-table matSort [dataSource]='dataSource'>
+    <div *ngIf="isLoading">
+      <mat-spinner></mat-spinner>
+    </div>
+    <table *ngIf="!isLoading" class="table table-responsive" mat-table matSort [dataSource]='dataSource'>
       <ng-container matColumnDef="name">
-        <th mat-header-cell mat-sort-header *matHeaderCellDef> name </th>
+        <th mat-header-cell mat-sort-header *matHeaderCellDef> Name </th>
         <td mat-cell *matCellDef="let category"> {{category.name}} </td>
       </ng-container>
       <ng-container matColumnDef="description">
