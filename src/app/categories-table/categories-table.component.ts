@@ -10,9 +10,9 @@ import {CategoryService} from "../services/category.service";
 import {openDialog} from "../dialog.utils";
 import {AppState} from "../state/app.state";
 import {select, Store} from "@ngrx/store";
-import {selectAllCategories} from "../state/selectors/categories.selectors";
+import {selectAllCategories, selectRemoveStatus} from "../state/selectors/categories.selectors";
 import {takeWhile} from "rxjs/operators";
-import {LoadCategories} from "../state/actions/categories.actions";
+import {LoadCategories, RemoveCategory} from "../state/actions/categories.actions";
 import {DialogStatus} from "../enums/dialog-status.enum";
 import {FormType} from "../enums/formType";
 import {MatSort} from "@angular/material/sort";
@@ -40,7 +40,7 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit, OnDestroy
     this.paginator = <MatPaginator>{};
     this.sort = <MatSort>{};
     this.dataSource = new MatTableDataSource<Category>(this.categories);
-
+    this.store.dispatch(LoadCategories())
 
   }
 
@@ -75,45 +75,31 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit, OnDestroy
   ngOnInit(): void {
 
     this.store.pipe(
-      /*takeWhile(() => this.componentActive),*/
+      takeWhile(() => this.componentActive),
       select(selectAllCategories))
       .subscribe(categories => {
         this.categories = categories;
         this.dataSource = new MatTableDataSource<Category>(this.categories);
-        this.dataSource.paginator = this.paginator;debugger;
+        this.dataSource.paginator = this.paginator;
+        this.isLoading = false;
       });
-
-
- /*   this.categoryService.getAllCategories().subscribe(data => {
-      this.categories = data;
-      this.dataSource = new MatTableDataSource<Category>(this.categories);
-      this.dataSource.paginator = this.paginator;
-    },
-      err =>{
-      console.error(err);
-      })*/
-    this.isLoading = false;
-    this.categoryService.getAllCategories().subscribe(data => {
-      this.isLoading = false
-      this.dataSource.data = data;
-      this.categories = data
-    })
   }
 
 
   deleteCategory(id: number) {
     let result = confirm("Confirm the deletion operation");
-    if (result)
-      this.categoryService.deleteCategory(id)
+    if (result) {
+      this.store.dispatch(RemoveCategory({categoryId: id}));
+      this.store.select(selectRemoveStatus)
         .subscribe(data => {
-            this.toastr.success('Category deleted successfully ', 'Deletion', {timeOut: 300});
-            this.dataSource.data = this.dataSource.data.filter((m: Category) => m.id != id);
-          },
-          err => {
-            this.toastr.error('Category deletion failed ', 'Cannot delete category that has products in it', {timeOut: 1500});
-          });
+          if (data) {
+            this.toastr.success('Category deleted successfully ', 'Deletion', {timeOut: 1700});
+          } else {
+            this.toastr.error('Category deletion failed ', 'Deletion', {timeOut: 1700});
+          }
+        });
+    }
   }
-
   ngOnDestroy(): void {
     this.componentActive = false;
   }

@@ -4,12 +4,13 @@ import {Product} from "../services/product.model";
 
 export interface AppState {
   categories: CategoriesState;
-  produucts: ProductsState;
+  products: ProductsState;
   invoices: InvoicesState;
 }
 export interface CategoriesState {
   categoriesList: Category[];
-  selectedCategory: Category
+  selectedCategory: Category;
+  categoryRemoved: CategoryDeletionState;
 }
 interface ProductsState {
   productsList: Product[];
@@ -19,4 +20,9 @@ interface ProductsState {
 interface InvoicesState {
   invoicesList: Invoice[];
   selectedInvoice: Invoice
+}
+
+export enum CategoryDeletionState {
+  NotModified,
+  Deleted
 }

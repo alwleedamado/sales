@@ -38,7 +38,7 @@ import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
 import {InvoiceFormComponent} from "./invoice-form/invoice-form.component";
 import {StoreModule} from "@ngrx/store";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
-import { categoriesReducer} from "./state/categoriesReducer";
+import {categoriesReducer, categoryReducer} from "./state/categoriesReducer";
 import {productsReducer} from "./state/productsReducer";
 import {invoicesReducer} from "./state/invoicesReducer";
 import { EffectsModule } from '@ngrx/effects';
@@ -91,10 +91,10 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     HttpClientModule,
     MatSortModule,
     StoreModule.forRoot({
+      categories: categoryReducer,
       products: productsReducer,
       invoices: invoicesReducer
     }),
-    StoreModule.forFeature('categories', categoriesReducer),
     StoreDevtoolsModule.instrument({
       name:"Invoice Management",
     }),
