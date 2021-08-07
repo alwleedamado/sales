@@ -17,12 +17,13 @@ export class CategoriesEffects {
    categories$ = createEffect(() =>  this.actions$.pipe(
     ofType(LoadCategories),
     tap(() => console.log("effects")),
-    mergeMap(() => this.categoryService.getAllCategories().pipe(
-      tap(a => console.log(a)),
+    switchMap(() => this.categoryService.getAllCategories().pipe(
+      tap(a => {console.log(a);}),
       map(categories => LoadCategoriesSuccess({ categories }),
         catchError(err => throwError(err))))
     ), catchError(err => of(LoadCategoriesFailed()))
   ));
+
   addCategory$ = createEffect(() => this.actions$
     .pipe(
       ofType(RemoveCategory),
