@@ -36,6 +36,15 @@ import {CategoryService} from "./services/category.service";
 import {ProductsService} from "./services/products.service";
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
 import {InvoiceFormComponent} from "./invoice-form/invoice-form.component";
+import {StoreModule} from "@ngrx/store";
+import {StoreDevtoolsModule} from "@ngrx/store-devtools";
+import { categoriesReducer} from "./state/categoriesReducer";
+import {productsReducer} from "./state/productsReducer";
+import {invoicesReducer} from "./state/invoicesReducer";
+import { EffectsModule } from '@ngrx/effects';
+import { CategoriesEffects } from './state/effects/categories.effects';
+import { ProductsEffects } from './state/effects/products.effects';
+import { InvoicesEffects } from './state/effects/invoices.effects';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
@@ -52,37 +61,44 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     InvoiceFormComponent,
 
   ],
-    imports: [
-        BrowserModule,
-        RouterModule.forRoot([
-            {path: 'categories', component: CategoriesTableComponent},
-            {path: 'items', component: ProductsTableComponent},
-            {path: 'invoices', component: InvoiceTableComponent},
-            {path: 'invoices/:id', component: InvoiceFormComponent},
-            {path: 'invoices/edit/:id', component: InvoiceModalComponent},
-            {path: '**', redirectTo: 'categories', pathMatch: 'full'}
-        ], {onSameUrlNavigation: 'reload'}),
-        BrowserAnimationsModule,
-        MatNativeDateModule,
-        ToastrModule.forRoot(),
-        MatDatepickerModule,
-        MatButtonModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatInputModule,
-        ReactiveFormsModule,
-        MatDialogModule,
-        MatSelectModule,
-        MatAutocompleteModule,
-        MatListModule,
-        MatSidenavModule,
-        LayoutModule,
-        MatToolbarModule,
-        MatIconModule,
-        HttpClientModule,
-        MatSortModule,
-        MatProgressSpinnerModule,
-    ],
+  imports: [
+    BrowserModule,
+    RouterModule.forRoot([
+      {path: 'categories', component: CategoriesTableComponent},
+      {path: 'items', component: ProductsTableComponent},
+      {path: 'invoices', component: InvoiceTableComponent},
+      {path:'invoices/:id',component:InvoiceFormComponent},
+      {path:'**', redirectTo:'categories', pathMatch:'full'}
+    ],{onSameUrlNavigation: 'reload'}),
+    BrowserAnimationsModule,
+    MatNativeDateModule,
+    ToastrModule.forRoot(),
+    MatDatepickerModule,
+    MatButtonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatSelectModule,
+    MatAutocompleteModule,
+    MatListModule,
+    MatSidenavModule,
+    LayoutModule,
+    MatToolbarModule,
+    MatIconModule,
+    HttpClientModule,
+    MatSortModule,
+    StoreModule.forRoot({
+      products: productsReducer,
+      invoices: invoicesReducer
+    }),
+    StoreModule.forFeature('categories', categoriesReducer),
+    StoreDevtoolsModule.instrument({
+      name:"Invoice Management",
+    }),
+    EffectsModule.forRoot([CategoriesEffects, ProductsEffects, InvoicesEffects])
+  ],
   providers: [CategoryService,ProductsService,    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}],
   bootstrap: [AppComponent]
 })
