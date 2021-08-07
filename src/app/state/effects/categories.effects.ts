@@ -17,7 +17,7 @@ export class CategoriesEffects {
         catchError(err => throwError(err))))
     ), catchError(err => of(LoadCategoriesFailed()))
   ));
-
+  addCategory$ = this.actions$.pipe();
   constructor(private actions$: Actions, private categoryService: CategoryService) {}
 
 }

@@ -71,6 +71,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
       {path:'**', redirectTo:'categories', pathMatch:'full'}
     ],{onSameUrlNavigation: 'reload'}),
     BrowserAnimationsModule,
+    MatProgressSpinnerModule,
     MatNativeDateModule,
     ToastrModule.forRoot(),
     MatDatepickerModule,
