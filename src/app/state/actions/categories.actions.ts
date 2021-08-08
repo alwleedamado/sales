@@ -11,7 +11,7 @@ export const AddCategorySuccess = createAction('[Categories] Add Category succes
 
 export const RemoveCategory = createAction('[Categories] Remove Category', props<{categoryId: number}>());
 export const RemoveCategoryFailed = createAction('[Categories] Remove Category failed', props<{categoryId: number}>());
-export const RemoveCategorySuccess = createAction('[Categories] Remove Category success', props<{category: Category}>());
+export const RemoveCategorySuccess = createAction('[Categories] Remove Category success', props<{categoryId: number}>());
 
 export const UpdateCategory = createAction('[Categories] Update Category', props<{category: Category}>());
 export const UpdateCategoryFailed = createAction('[Categories] Update Category failed', props<{category: Category}>());

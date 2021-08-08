@@ -20,7 +20,7 @@ export class CategoryService {
     return this.http.get<Category[]>(this.baseUrl);
   }
 
-  addCategory(category: Category) {
+  addCategory(category: Category) :Observable<Category>{
     return this.http.post<Category>(this.baseUrl, category).pipe(
       catchError(CategoryService.handleError)
     );;

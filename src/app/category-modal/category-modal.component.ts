@@ -5,6 +5,11 @@ import {CategoryService} from "../services/category.service";
 import {ToastrService} from "ngx-toastr";
 import {DialogStatus} from "../enums/dialog-status.enum";
 import {FormType} from "../enums/formType";
+import {AddCategory} from "../state/actions/categories.actions";
+import {select, Store} from "@ngrx/store";
+import {selectCategory} from "../state/selectors/categories.selectors";
+import {filter, skip} from "rxjs/operators";
+import {AppState} from "../state/app.state";
 
 @Component({
   selector: 'app-category-modal',
@@ -16,6 +21,7 @@ export class CategoryModalComponent implements OnInit {
   public isLoading = false;
   formType: FormType = FormType.Create;
   constructor(
+    private store: Store<AppState>,
     public dialogRef: MatDialogRef<CategoryModalComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: any,
     private categoryService: CategoryService,
@@ -48,12 +54,15 @@ export class CategoryModalComponent implements OnInit {
             });
       } else {
         let category = this.categoryForm.value;
-        this.categoryService.addCategory(category)
-          .subscribe(ret => {
-              this.dialogRef.close(DialogStatus.createSuccess);
+        this.store.dispatch(AddCategory({category}));
+        this.store.pipe(select(selectCategory(category.id)))
+          .subscribe((ret: any) => {
+              console.log(ret);
+              this.isLoading = false
+              this.dialogRef.close(category.id);
             },
             err => {
-              this.dialogRef.close(DialogStatus.createFailed)
+              this.dialogRef.close(DialogStatus.updateFailed)
             });
       }
     }

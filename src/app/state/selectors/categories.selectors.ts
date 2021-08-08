@@ -7,6 +7,12 @@ const categoriesFeature = createFeatureSelector<AppState, CategoriesState>('cate
 export const selectAllCategories =
   createSelector<AppState, CategoriesState, Category[]>(categoriesFeature,(state) =>  state.categoriesList)
 
+export const selectCategory = (categoryId: number) => createSelector(selectAllCategories,
+  (state) =>{state.find(c => c.id == categoryId)})
+
+export const selectLastCategory = createSelector(categoriesFeature,
+    state => state.lastAddedCategory);
+
 export const selectRemoveStatus =
   createSelector<AppState, CategoriesState, CategoryDeletionState>(categoriesFeature,(state) =>  state.categoryRemoved)
 

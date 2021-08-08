@@ -11,6 +11,7 @@ export interface CategoriesState {
   categoriesList: Category[];
   selectedCategory: Category;
   categoryRemoved: CategoryDeletionState;
+  lastAddedCategory: Category;
 }
 interface ProductsState {
   productsList: Product[];
@@ -22,7 +23,7 @@ interface InvoicesState {
   selectedInvoice: Invoice
 }
 
-export enum CategoryDeletionState {
-  NotModified,
-  Deleted
+export interface CategoryDeletionState {
+  id: number;
+  deleted: boolean;
 }

@@ -11,7 +11,7 @@ import {openDialog} from "../dialog.utils";
 import {AppState} from "../state/app.state";
 import {select, Store} from "@ngrx/store";
 import {selectAllCategories, selectRemoveStatus} from "../state/selectors/categories.selectors";
-import {skip, take, takeWhile} from "rxjs/operators";
+import {filter, skip, take, takeWhile} from "rxjs/operators";
 import {LoadCategories, RemoveCategory} from "../state/actions/categories.actions";
 import {DialogStatus} from "../enums/dialog-status.enum";
 import {FormType} from "../enums/formType";
@@ -41,7 +41,7 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit, OnDestroy
     this.sort = <MatSort>{};
     this.dataSource = new MatTableDataSource<Category>(this.categories);
     this.store.dispatch(LoadCategories())
-
+    this.dataSource = new MatTableDataSource<Category>([]);
   }
 
   ngAfterViewInit() {
@@ -72,29 +72,26 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit, OnDestroy
     let data = {category, formType: FormType.Edit}
     this.openCategoryDialog(data);
   }
-
+count = 0;
   ngOnInit(): void {
 
-    this.dataSource = new MatTableDataSource<Category>([]);
 
-    this.store.pipe(
-      select(selectAllCategories) ,
-      takeWhile(() => this.componentActive))
+    this.store.select(selectAllCategories)
       .subscribe(categories => {
+        console.log(this.count++)
         this.categories = categories;
-        this.dataSource.data = categories;
+        this.dataSource.data =  [...categories];
         this.isLoading = false;
       });
   }
-
 
   deleteCategory(id: number) {
     let result = confirm("Confirm the deletion operation");
     if (result) {
       this.store.dispatch(RemoveCategory({categoryId: id}));
-      this.store.select(selectRemoveStatus).pipe(skip(1),take(1))
+      this.store.select(selectRemoveStatus).pipe(filter(cat => cat.id == id))
         .subscribe(data => {
-          if (data) {
+          if (data.deleted) {
             this.toastr.success('Category deleted successfully ', 'Deletion', {timeOut: 1700});
           } else {
             this.toastr.error('Category deletion failed ', 'Deletion', {timeOut: 1700});
