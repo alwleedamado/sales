@@ -17,4 +17,7 @@ export const UpdateCategory = createAction('[Categories] Update Category', props
 export const UpdateCategoryFailed = createAction('[Categories] Update Category failed', props<{err: any}>());
 export const UpdateCategorySuccess = createAction('[Categories] Update Category success', props<{id: number, category: Category}>());
 
-export const SetCurrentCategory = createAction('[Categories] Set Current Category', props<{categoryId: number}>());
+export const ResetCategoriesRequestState = createAction('[Categories] Reset_Categories_Request_state')
+export const ResetAddCategoryRequestState = createAction('[Categories] Reset_Add_Category_Request_state')
+export const ResetRemoveCategoryRequestState = createAction('[Categories] Reset_Remove_Category_Request_state');
+export const ResetUpdateCategoryRequestState = createAction('[Categories] Reset_Update_Category_Request_state');

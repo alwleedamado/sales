@@ -5,10 +5,20 @@ import {CategoryService} from "../services/category.service";
 import {ToastrService} from "ngx-toastr";
 import {DialogStatus} from "../enums/dialog-status.enum";
 import {FormType} from "../enums/formType";
-import {AddCategory, UpdateCategory} from "../state/actions/categories.actions";
+import {
+  AddCategory,
+  ResetAddCategoryRequestState,
+  ResetUpdateCategoryRequestState,
+  UpdateCategory
+} from "../state/actions/categories.actions";
 import {select, Store} from "@ngrx/store";
-import {selectAddCategoryStatus, selectCategory, selectUpdateStatus} from "../state/selectors/categories.selectors";
+import {
+  selectAddCategoryLoading,
+  selectAddCategoryStatus, selectRemoveCategoryLoading,
+  selectUpdateStatus
+} from "../state/selectors/categories.selectors";
 import {AppState, httpState} from "../state/app.state";
+import {takeWhile} from "rxjs/operators";
 
 @Component({
   selector: 'app-category-modal',
@@ -19,6 +29,8 @@ export class CategoryModalComponent implements OnInit {
   categoryForm: FormGroup;
   public isLoading = false;
   formType: FormType = FormType.Create;
+  private componentActive: boolean;
+
   constructor(
     private store: Store<AppState>,
     public dialogRef: MatDialogRef<CategoryModalComponent>,
@@ -32,45 +44,58 @@ export class CategoryModalComponent implements OnInit {
     });
     this.formType = data?.formType;
   }
+
   get name() {
-    return  this.categoryForm.get('name') as FormControl;
+    return this.categoryForm.get('name') as FormControl;
   }
+
   get description() {
-    return  this.categoryForm.get('description') as FormControl;
+    return this.categoryForm.get('description') as FormControl;
   }
-  save() {debugger
-    if(this.categoryForm.valid) {
-      this.isLoading = true;
+
+  save() {
+    if (this.categoryForm.valid) {
       let category = this.categoryForm.value;
       if (this.data.formType == FormType.Edit) {
-        category.id = this.data?.category?.id;console.log(category)
+        category.id = this.data?.category?.id;
         this.store.dispatch(UpdateCategory({category}));
         this.store.pipe(select(selectUpdateStatus))
           .subscribe(ret => {
             this.isLoading = false
-            if(ret === httpState.success)
+            if (ret === httpState.success) {
+              this.store.dispatch(ResetUpdateCategoryRequestState());
               this.dialogRef.close(DialogStatus.updateSuccess);
-            else if(ret === httpState.fail)
+            } else if (ret === httpState.fail) {
+              this.store.dispatch(ResetUpdateCategoryRequestState());
               this.dialogRef.close(DialogStatus.updateFailed)
-            });
+            }
+          });
       } else {
         let category = this.categoryForm.value;
         this.store.dispatch(AddCategory({category}));
         this.store.pipe(select(selectAddCategoryStatus))
           .subscribe((ret: any) => {
-              if (ret == httpState.success)
-                this.dialogRef.close(DialogStatus.createSuccess);
-              else if(ret === httpState.fail)
+            if (ret == httpState.success) {
+              this.store.dispatch(ResetAddCategoryRequestState());
+              this.dialogRef.close(DialogStatus.createSuccess);
+            } else if (ret === httpState.fail) {
+              this.store.dispatch(ResetAddCategoryRequestState());
               this.dialogRef.close(DialogStatus.createFailed)
-            });
+            }
+          });
       }
     }
   }
+
   close() {
     this.dialogRef.close();
   }
-  ngOnInit(): void {
 
+  ngOnInit(): void {
+    this.store.pipe(
+      select(selectAddCategoryLoading,selectRemoveCategoryLoading),
+      takeWhile(() => this.componentActive))
+      .subscribe(status => this.isLoading = status  )
   }
 
 }

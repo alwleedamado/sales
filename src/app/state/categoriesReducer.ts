@@ -3,10 +3,17 @@ import {Category} from "../services/category.model";
 import {
   AddCategory,
   AddCategoryFailed,
-  AddCategorySuccess, LoadCategories, LoadCategoriesFailed,
-  LoadCategoriesSuccess, RemoveCategory,
+  AddCategorySuccess,
+  LoadCategories,
+  LoadCategoriesFailed,
+  LoadCategoriesSuccess,
+  RemoveCategory,
   RemoveCategoryFailed,
-  RemoveCategorySuccess, UpdateCategory, UpdateCategoryFailed,
+  RemoveCategorySuccess,
+  ResetAddCategoryRequestState,
+  ResetCategoriesRequestState, ResetRemoveCategoryRequestState, ResetUpdateCategoryRequestState,
+  UpdateCategory,
+  UpdateCategoryFailed,
   UpdateCategorySuccess
 } from './actions/categories.actions'
 import produce from "immer";
@@ -40,7 +47,7 @@ const onRemoveCategorySuccess = (state: CategoriesState, {categoryId}: any ): Ca
 }
 const onRemoveCategoryFailed = (state: CategoriesState, {err}: any ): CategoriesState => {
   return produce(state, (proxy: any) => {
-    proxy.categoryAddState = httpState.fail;
+    proxy.categoryRemoveState = httpState.fail;
     proxy.error = err
   });
 }
@@ -78,6 +85,11 @@ export const categoryReducer = createReducer<CategoriesState>(
   on(AddCategory, (state, s) => ({...state, categoryAddState: httpState.request})),
   on(RemoveCategory, (state, s) => ({...state, categoryRemoveState: httpState.request})),
   on(UpdateCategory, (state, s) => ({...state, categoryUpdateState: httpState.request})),
+  on(ResetCategoriesRequestState, (state, s) => ({...state, categoriesListLoadState: httpState.idle})),
+  on(ResetAddCategoryRequestState, (state, s) => ({...state, categoryAddState: httpState.idle})),
+  on(ResetRemoveCategoryRequestState, (state, s) => ({...state, categoryRemoveState: httpState.idle})),
+  on(ResetUpdateCategoryRequestState, (state, s) => ({...state, categoryUpdateState: httpState.idle})),
+
   on(LoadCategoriesSuccess, onCategoriesLoadedSuccessfully),
   on(LoadCategoriesFailed, onCategoriesLoadFailed),
   on(RemoveCategorySuccess, onRemoveCategorySuccess),
