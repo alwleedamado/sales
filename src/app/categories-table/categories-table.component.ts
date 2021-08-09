@@ -3,7 +3,7 @@ import {MatPaginator} from "@angular/material/paginator";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {MatTableDataSource} from "@angular/material/table";
-import {Category} from "../services/category.model";
+import {Category} from "../models/category.model";
 import {MatDialog} from "@angular/material/dialog";
 import {CategoryModalComponent} from "../category-modal/category-modal.component";
 import {CategoryService} from "../services/category.service";
@@ -16,6 +16,7 @@ import {DialogStatus} from "../enums/dialog-status.enum";
 import {FormType} from "../enums/formType";
 import {MatSort} from "@angular/material/sort";
 import {takeWhile} from "rxjs/operators";
+import {selectAll  as selectCategories} from "../state/selectors/categories.selectors";
 
 @Component({
   selector: 'app-categories-table',

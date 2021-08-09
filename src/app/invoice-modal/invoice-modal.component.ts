@@ -1,14 +1,14 @@
 import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatTable, MatTableDataSource} from "@angular/material/table";
-import {Category, CategoryLookup} from "../services/category.model";
+import {Category, CategoryLookup} from "../models/category.model";
 import {MatPaginator} from "@angular/material/paginator";
-import {Product, ProductLookup} from '../services/product.model';
+import {Product, ProductLookup} from '../models/product.model';
 import {EMPTY, Observable} from "rxjs";
 import {ProductsService} from "../services/products.service";
 import {ToastrService} from "ngx-toastr";
 import {CategoryService} from "../services/category.service";
-import {Invoice, InvoiceDetail} from "../services/invoice.model";
+import {Invoice, InvoiceDetail} from "../models/invoice.model";
 import {InvoiceService} from "../services/invoice.service";
 import {map, takeWhile} from "rxjs/operators";
 import {ActivatedRoute} from "@angular/router";
@@ -68,7 +68,7 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.categories$ = this.categoryService.getAllCategories().pipe(
+    this.categories$ = this.categoryService.getAll().pipe(
       map<Category[], CategoryLookup[]>(cat =>
         cat.map<CategoryLookup>(c => {
           return <CategoryLookup>{id: c.id, name: c.name};
@@ -249,7 +249,7 @@ export class InvoiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateProductAutocomplete() {
     console.log(this.category.value.id);
-    (typeof this.category.value.id !== 'undefined') && (this.Products$ = this.categoryService.getProducts(this.category.value.id));
+    (typeof this.category.value.id !== 'undefined') && (this.Products$ = this.categoryService.get(this.category.value.id));
   }
 
   fetchPrice() {

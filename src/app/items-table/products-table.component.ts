@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
-import {Product} from "../services/product.model";
+import {Product} from "../models/product.model";
 import {MatDialog} from "@angular/material/dialog";
 import {openDialog} from "../dialog.utils";
 import {ToastrService} from "ngx-toastr";
 import {MatPaginator} from "@angular/material/paginator";
-import {Category, CategoryLookup} from "../services/category.model";
+import {Category, CategoryLookup} from "../models/category.model";
 import {CategoryService} from "../services/category.service";
 import {map} from "rxjs/operators";
 import {Observable} from "rxjs";
@@ -39,7 +39,7 @@ export class ProductsTableComponent implements OnInit {
     this.paginator = <MatPaginator>{};
     this.sort = <MatSort>{};
 
-    this.categories$ = this.categoryService.getAllCategories().pipe(
+    this.categories$ = this.categoryService.getAll().pipe(
       map<Category[], CategoryLookup[]>(cat =>
         cat.map<CategoryLookup>(c => {
           return <CategoryLookup>{id: c.id, name: c.name};

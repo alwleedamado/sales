@@ -1,5 +1,5 @@
 import {createReducer} from "@ngrx/store";
-import {Category} from "../services/category.model";
+import {Category} from "../../models/category.model";
 
 const invoicesInitialState = {
   invoicesList: [],

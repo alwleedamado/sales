@@ -1,11 +1,19 @@
 import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {AppState, CategoriesState, httpState} from "../app.state";
-import {Category} from "../../services/category.model";
+import {Category} from "../../models/category.model";
+import {CategoryAdapter} from "../adapters/category.adapter";
 
 const categoriesFeature = createFeatureSelector<AppState, CategoriesState>('categories');
+const selectCategoryEntity = createSelector(categoriesFeature, (state) =>state.data)
 
+export const {
+  selectAll,
+  selectEntities,
+  selectIds,
+  selectTotal,
+} = CategoryAdapter.getSelectors();
 export const selectAllCategories =
-  createSelector<AppState, CategoriesState, Category[]>(categoriesFeature,(state) =>  state.categoriesList)
+  createSelector(selectCategoryEntity, selectAll)
 
 export const selectCategory = (categoryId: number) =>
   createSelector(
@@ -14,17 +22,18 @@ export const selectCategory = (categoryId: number) =>
       state.find(c => c.id == categoryId));
 
 export const selectUpdateStatus = createSelector(categoriesFeature,
-    (state) => state.categoryUpdateState);
+    (state) => state.metaData.categoryUpdateState);
 
 export const selectCreateStatus = createSelector(
   categoriesFeature,
-  state => state.categoryAddState);
-export const selectCategoriesListLoading = createSelector(categoriesFeature, (state) => state.categoriesListLoadState === httpState.request)
-export const selectAddCategoryLoading = createSelector(categoriesFeature, (state) => state.categoryAddState === httpState.request)
-export const selectRemoveCategoryLoading = createSelector(categoriesFeature, (state) => state.categoryRemoveState === httpState.request)
+  state => state.metaData.categoryAddState);
+
+export const selectCategoriesListLoading = createSelector(categoriesFeature, (state) => state.metaData.categoriesListLoadState === httpState.request)
+export const selectAddCategoryLoading = createSelector(categoriesFeature, (state) => state.metaData.categoryAddState === httpState.request)
+export const selectRemoveCategoryLoading = createSelector(categoriesFeature, (state) => state.metaData.categoryRemoveState === httpState.request)
 
 export const selectRemoveStatus =
-  createSelector(categoriesFeature,(state) =>  state.categoryRemoveState)
+  createSelector(categoriesFeature,(state) =>  state.metaData.categoryRemoveState)
 export const selectAddCategoryStatus =
-  createSelector(categoriesFeature,(state) =>  state.categoryAddState)
+  createSelector(categoriesFeature,(state) =>  state.metaData.categoryAddState)
 

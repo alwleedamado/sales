@@ -1,12 +1,12 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
-import {Invoice} from "../services/invoice.model";
+import {Invoice} from "../models/invoice.model";
 import {InvoiceService} from "../services/invoice.service";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {InvoiceModalComponent} from "../invoice-modal/invoice-modal.component";
 import {ToastrService} from "ngx-toastr";
 import {map, takeWhile} from "rxjs/operators";
-import {Category, CategoryLookup} from "../services/category.model";
+import {Category, CategoryLookup} from "../models/category.model";
 import {MatPaginator} from "@angular/material/paginator";
 import {openDialog} from "../dialog.utils";
 import {EMPTY, Observable} from "rxjs";
@@ -32,7 +32,7 @@ export class InvoiceTableComponent implements OnInit, OnDestroy {
               private toastr: ToastrService,
               private router: Router) {
     this.paginator = <MatPaginator>{};
-    this.categories$ = this.categoryService.getAllCategories().pipe(
+    this.categories$ = this.categoryService.getAll().pipe(
       map<Category[], CategoryLookup[]>(cat =>
         cat.map<CategoryLookup>(c => {
           return <CategoryLookup>{id: c.id, name: c.name};
