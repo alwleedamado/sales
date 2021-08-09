@@ -1,5 +1,5 @@
 import {createFeatureSelector, createSelector} from "@ngrx/store";
-import {AppState, CategoriesState, CategoryDeletionState} from "../app.state";
+import {AppState, CategoriesState, httpState} from "../app.state";
 import {Category} from "../../services/category.model";
 
 const categoriesFeature = createFeatureSelector<AppState, CategoriesState>('categories');
@@ -7,12 +7,24 @@ const categoriesFeature = createFeatureSelector<AppState, CategoriesState>('cate
 export const selectAllCategories =
   createSelector<AppState, CategoriesState, Category[]>(categoriesFeature,(state) =>  state.categoriesList)
 
-export const selectCategory = (categoryId: number) => createSelector(selectAllCategories,
-  (state) =>{state.find(c => c.id == categoryId)})
+export const selectCategory = (categoryId: number) =>
+  createSelector(
+    selectAllCategories,
+    (state) =>
+      state.find(c => c.id == categoryId));
 
-export const selectLastCategory = createSelector(categoriesFeature,
-    state => state.lastAddedCategory);
+export const selectUpdateStatus = createSelector(categoriesFeature,
+    (state) => state.categoryUpdateState);
+
+export const selectCreateStatus = createSelector(
+  categoriesFeature,
+  state => state.categoryAddState);
+export const selectCategoriesListLoading = createSelector(categoriesFeature, (state) => state.categoriesListLoadState === httpState.request)
+export const selectAddCategoryLoading = createSelector(categoriesFeature, (state) => state.categoryAddState === httpState.request)
+export const selectRemoveCategoryLoading = createSelector(categoriesFeature, (state) => state.categoryRemoveState === httpState.request)
 
 export const selectRemoveStatus =
-  createSelector<AppState, CategoriesState, CategoryDeletionState>(categoriesFeature,(state) =>  state.categoryRemoved)
+  createSelector(categoriesFeature,(state) =>  state.categoryRemoveState)
+export const selectAddCategoryStatus =
+  createSelector(categoriesFeature,(state) =>  state.categoryAddState)
 

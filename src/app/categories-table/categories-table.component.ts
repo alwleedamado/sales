@@ -8,10 +8,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {CategoryModalComponent} from "../category-modal/category-modal.component";
 import {CategoryService} from "../services/category.service";
 import {openDialog} from "../dialog.utils";
-import {AppState} from "../state/app.state";
-import {select, Store} from "@ngrx/store";
+import {AppState, httpState} from "../state/app.state";
+import {Store} from "@ngrx/store";
 import {selectAllCategories, selectRemoveStatus} from "../state/selectors/categories.selectors";
-import {filter, skip, take, takeWhile} from "rxjs/operators";
 import {LoadCategories, RemoveCategory} from "../state/actions/categories.actions";
 import {DialogStatus} from "../enums/dialog-status.enum";
 import {FormType} from "../enums/formType";
@@ -52,18 +51,15 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit, OnDestroy
   openCategoryDialog(data?: any) {
     openDialog(this.dialog, CategoryModalComponent, data).afterClosed()
       .subscribe(ret => {
-        if (ret) {
-          if (ret === DialogStatus.updateSuccess) {
-            this.toastr.success('Category Updated successfully ', 'Update', {timeOut: 1700});
-          }
-          else if (ret === DialogStatus.createSuccess) {
-            this.toastr.success('Category Created successfully ', 'Create', {timeOut: 1700});
-          }          else if (ret === DialogStatus.updateFailed) {
-            this.toastr.error('Category Updated Failed ', 'Update', {timeOut: 1700});
-          }          else if (ret === DialogStatus.createFailed) {
-            this.toastr.error('Category Created Failed ', 'Create', {timeOut: 1700});
-          }        }
-        this.ngOnInit();
+        console.log(`data: ${ret}`)
+        if (ret === DialogStatus.updateSuccess)
+          this.toastr.success('Category Updated successfully ', 'Update', {timeOut: 1700});
+        else if (ret === DialogStatus.createSuccess)
+          this.toastr.success('Category Created successfully ', 'Create', {timeOut: 1700});
+        else if (ret === DialogStatus.createSuccess)
+          this.toastr.error('Category Updated Failed ', 'Update', {timeOut: 1700});
+        else if (ret === DialogStatus.createFailed)
+          this.toastr.error('Category Created Failed ', 'Create', {timeOut: 1700});
       });
   }
 
@@ -72,13 +68,11 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit, OnDestroy
     let data = {category, formType: FormType.Edit}
     this.openCategoryDialog(data);
   }
-count = 0;
   ngOnInit(): void {
 
 
     this.store.select(selectAllCategories)
       .subscribe(categories => {
-        console.log(this.count++)
         this.categories = categories;
         this.dataSource.data =  [...categories];
         this.isLoading = false;
@@ -89,11 +83,11 @@ count = 0;
     let result = confirm("Confirm the deletion operation");
     if (result) {
       this.store.dispatch(RemoveCategory({categoryId: id}));
-      this.store.select(selectRemoveStatus).pipe(filter(cat => cat.id == id))
-        .subscribe(data => {
-          if (data.deleted) {
+      this.store.select(selectRemoveStatus).pipe()
+        .subscribe(status => {
+          if (status === httpState.success) {
             this.toastr.success('Category deleted successfully ', 'Deletion', {timeOut: 1700});
-          } else {
+          } else if(status === httpState.fail) {
             this.toastr.error('Category deletion failed ', 'Deletion', {timeOut: 1700});
           }
         });

@@ -9,9 +9,12 @@ export interface AppState {
 }
 export interface CategoriesState {
   categoriesList: Category[];
-  selectedCategory: Category;
-  categoryRemoved: CategoryDeletionState;
-  lastAddedCategory: Category;
+  selectedCategoryId: number;
+  categoryRemoveState: httpState;
+  categoryAddState: httpState;
+  categoryUpdateState: httpState;
+  categoriesListLoadState: httpState,
+  error: any
 }
 interface ProductsState {
   productsList: Product[];
@@ -23,7 +26,10 @@ interface InvoicesState {
   selectedInvoice: Invoice
 }
 
-export interface CategoryDeletionState {
-  id: number;
-  deleted: boolean;
+
+export enum httpState {
+  idle,
+  request,
+  success,
+  fail
 }

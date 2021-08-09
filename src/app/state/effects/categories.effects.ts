@@ -8,7 +8,7 @@ import {
   LoadCategoriesSuccess,
   RemoveCategory,
   RemoveCategoryFailed,
-  RemoveCategorySuccess
+  RemoveCategorySuccess, UpdateCategory, UpdateCategoryFailed, UpdateCategorySuccess
 } from "../actions/categories.actions";
 import {catchError, concatMap, map, switchMap, tap} from "rxjs/operators";
 import {CategoryService} from "../../services/category.service";
@@ -19,7 +19,6 @@ import {of, throwError} from "rxjs";
 export class CategoriesEffects {
   categories$ = createEffect(() => this.actions$.pipe(
     ofType(LoadCategories),
-    tap(() => console.log("effects")),
     switchMap(() => this.categoryService.getAllCategories()
       .pipe(
         map(categories => LoadCategoriesSuccess({categories})),
@@ -33,7 +32,7 @@ export class CategoriesEffects {
       switchMap((actionProps) => this.categoryService.deleteCategory(actionProps.categoryId)
         .pipe(
           map(id => RemoveCategorySuccess({categoryId: actionProps.categoryId})),
-          catchError(err => of(RemoveCategoryFailed({categoryId: actionProps.categoryId})))
+          catchError(err => of(RemoveCategoryFailed({err})))
         )
       )
     ));
@@ -44,10 +43,23 @@ export class CategoriesEffects {
       concatMap((actionProps) => this.categoryService.addCategory(actionProps.category)
         .pipe(
           map(category => AddCategorySuccess({category})),
-          catchError(err => of(AddCategoryFailed(err)))
+          catchError(err => of(AddCategoryFailed({err})))
         )
       )
     ));
+
+  updateCategory$ = createEffect(() => this.actions$
+    .pipe(
+      ofType(UpdateCategory),
+      concatMap((actionProps) => this.categoryService.updateCategory(actionProps.category.id, actionProps.category)
+        .pipe(
+          tap(s => console.log(s)),
+          map(category => UpdateCategorySuccess({id: actionProps.category.id,category:actionProps.category})),
+          catchError(err => of(UpdateCategoryFailed({err})))
+        )
+      )
+    ));
+
 
   constructor(private actions$: Actions, private categoryService: CategoryService) {
   }

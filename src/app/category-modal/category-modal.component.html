@@ -20,13 +20,13 @@
       </div>
     </mat-dialog-content>
     <mat-dialog-actions>
-      <button mat-flat-button type='submit' [disabled]='!isLoading && categoryForm.invalid' color="primary">
+      <button mat-flat-button type='submit' [disabled]='isLoading || categoryForm.invalid' color="primary">
         <mat-icon matPrefix *ngIf='!isLoading'>save</mat-icon>
         <mat-icon>
           <mat-spinner diameter='20' color="accent" *ngIf="isLoading"></mat-spinner>
         </mat-icon>Save
       </button>
-      <button mat-flat-button  color="primary" (click)="close()"
+      <button mat-flat-button  (click)="close()"
               [mat-dialog-close]="true">Cancel
       </button>
     </mat-dialog-actions>
