@@ -18,8 +18,8 @@ import {FormType} from "../enums/formType";
 
 @Component({
   selector: 'app-Products-table',
-  templateUrl: './Products-table.component.html',
-  styleUrls: ['./Products-table.component.scss']
+  templateUrl: './products-table.component.html',
+  styleUrls: ['./products-table.component.scss']
 })
 export class ProductsTableComponent implements OnInit {
   Products: Product[] = [];

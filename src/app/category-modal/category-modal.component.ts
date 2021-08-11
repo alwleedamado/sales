@@ -12,13 +12,9 @@ import {
   UpdateCategory
 } from "../state/actions/categories.actions";
 import {select, Store} from "@ngrx/store";
-import {
-  selectAddCategoryLoading,
-  selectAddCategoryStatus, selectRemoveCategoryLoading,
-  selectUpdateStatus
-} from "../state/selectors/categories.selectors";
 import {AppState, httpState} from "../state/app.state";
 import {takeWhile} from "rxjs/operators";
+import { CategoriesSelector } from '../state/selectors/categories.selectors';
 
 @Component({
   selector: 'app-category-modal',
@@ -59,7 +55,7 @@ export class CategoryModalComponent implements OnInit {
       if (this.data.formType == FormType.Edit) {
         category.id = this.data?.category?.id;
         this.store.dispatch(UpdateCategory({category}));
-        this.store.pipe(select(selectUpdateStatus))
+        this.store.pipe(select(CategoriesSelector.selectUpdateStatus))
           .subscribe(ret => {
             this.isLoading = false
             if (ret === httpState.success) {
@@ -72,8 +68,8 @@ export class CategoryModalComponent implements OnInit {
           });
       } else {
         let category = this.categoryForm.value;
-        this.store.dispatch(AddCategory({category}));
-        this.store.pipe(select(selectAddCategoryStatus))
+        this.store.dispatch(AddCategory({entity: category}));
+        this.store.pipe(select(CategoriesSelector.selectCreateRequestStatus))
           .subscribe((ret: any) => {
             if (ret == httpState.success) {
               this.store.dispatch(ResetAddCategoryRequestState());
@@ -93,7 +89,7 @@ export class CategoryModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.pipe(
-      select(selectAddCategoryLoading,selectRemoveCategoryLoading),
+      select(CategoriesSelector.selectAddLoadingStatus,CategoriesSelector.selectRemoveLoadingStatus),
       takeWhile(() => this.componentActive))
       .subscribe(status => this.isLoading = status  )
   }

@@ -19,9 +19,9 @@ import {of, throwError} from "rxjs";
 export class CategoriesEffects {
   categories$ = createEffect(() => this.actions$.pipe(
     ofType(LoadCategories),
-    switchMap(() => this.categoryService.getAll()
+    concatMap(() => this.categoryService.getAll()
       .pipe(
-        map(categories => LoadCategoriesSuccess({categories})),
+        map(list => LoadCategoriesSuccess({list})),
         catchError(err => throwError(err)))
     )
   ));
@@ -40,9 +40,9 @@ export class CategoriesEffects {
   addCategory$ = createEffect(() => this.actions$
     .pipe(
       ofType(AddCategory),
-      concatMap((actionProps) => this.categoryService.add(actionProps.category)
+      concatMap((actionProps) => this.categoryService.add(actionProps.entity)
         .pipe(
-          map(category => AddCategorySuccess({category})),
+          map(entity => AddCategorySuccess({entity})),
           catchError(err => of(AddCategoryFailed({err})))
         )
       )
@@ -54,7 +54,7 @@ export class CategoriesEffects {
       concatMap((actionProps) => this.categoryService.update(actionProps.category.id, actionProps.category)
         .pipe(
           tap(s => console.log(s)),
-          map(category => UpdateCategorySuccess({id: actionProps.category.id,category:actionProps.category})),
+          map(entity => UpdateCategorySuccess({id: actionProps.category.id,entity:actionProps.category})),
           catchError(err => of(UpdateCategoryFailed({err})))
         )
       )

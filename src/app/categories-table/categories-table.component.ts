@@ -10,13 +10,12 @@ import {CategoryService} from "../services/category.service";
 import {openDialog} from "../dialog.utils";
 import {AppState, httpState} from "../state/app.state";
 import {select, Store} from "@ngrx/store";
-import {selectAllCategories, selectRemoveStatus} from "../state/selectors/categories.selectors";
+import {CategoriesSelector} from "../state/selectors/categories.selectors";
 import {LoadCategories, RemoveCategory, ResetRemoveCategoryRequestState} from "../state/actions/categories.actions";
 import {DialogStatus} from "../enums/dialog-status.enum";
 import {FormType} from "../enums/formType";
 import {MatSort} from "@angular/material/sort";
 import {takeWhile} from "rxjs/operators";
-import {selectAll  as selectCategories} from "../state/selectors/categories.selectors";
 
 @Component({
   selector: 'app-categories-table',
@@ -71,7 +70,7 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit, OnDestroy
     this.openCategoryDialog(data);
   }
   ngOnInit(): void {
-    this.store.select(selectAllCategories)
+    this.store.select(CategoriesSelector.selectAll)
       .subscribe(categories => {
         this.categories = categories;
         this.dataSource.data =  [...categories];
@@ -83,7 +82,7 @@ export class CategoriesTableComponent implements OnInit,AfterViewInit, OnDestroy
     let result = confirm("Confirm the deletion operation");
     if (result) {
       this.store.dispatch(RemoveCategory({categoryId: id}));
-      this.store.pipe(select(selectRemoveStatus),takeWhile(() => this.componentActive))
+      this.store.pipe(select(CategoriesSelector.selectRemoveRequestStatus),takeWhile(() => this.componentActive))
         .subscribe(status => {
           if (status === httpState.success) {
             this.store.dispatch(ResetRemoveCategoryRequestState());

@@ -4,28 +4,23 @@ import {Product} from "../models/product.model";
 import {EntityState} from "@ngrx/entity";
 
 export interface AppState {
-  categories: CategoriesState;
-  products: ProductsState;
+  categories: GenericState<Category>;
+  products: GenericState<Product>;
   invoices: InvoicesState;
 }
 
-export interface CategoriesState{
-  data: EntityState<Category>;
+export interface GenericState<T> {
+  data: EntityState<T>;
   metaData: {
-    categoryRemoveState: httpState;
-    categoryAddState: httpState;
-    categoryUpdateState: httpState;
-    categoriesListLoadState: httpState,
+    removeRequestState: httpState;
+    addRequestState: httpState;
+    updateRequestState: httpState;
+    ListLoadRequestState: httpState,
     error: any;
   }
 }
 
-interface ProductsState {
-  productsList: Product[];
-  selectedProduct: Product;
-}
-
-interface InvoicesState {
+export interface InvoicesState {
   invoicesList: Invoice[];
   selectedInvoice: Invoice
 }
