@@ -54,7 +54,7 @@ export class CategoryModalComponent implements OnInit {
       let category = this.categoryForm.value;
       if (this.data.formType == FormType.Edit) {
         category.id = this.data?.category?.id;
-        this.store.dispatch(UpdateCategory({category}));
+        this.store.dispatch(UpdateCategory({entity: category}));
         this.store.pipe(select(CategoriesSelector.selectUpdateStatus))
           .subscribe(ret => {
             this.isLoading = false
