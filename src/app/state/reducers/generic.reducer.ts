@@ -1,8 +1,7 @@
 import { EntityAdapter } from "@ngrx/entity";
 import { produce } from "immer";
 import { Category } from "src/app/models/category.model";
-import { CategoryAdapter } from "../adapters/category.adapter";
-import { ProductAdapter } from "../adapters/product.adapter";
+import { productAdapter } from "../adapters/product.adapter";
 import { GenericState, httpState } from "../app.state";
 
 export class GenericReducer<T> {
@@ -92,4 +91,4 @@ export class GenericReducer<T> {
   }
 }
 
-export const productReducerHandler = new GenericReducer<Category>(ProductAdapter);
+export const productReducerHandler = new GenericReducer<Category>(productAdapter);

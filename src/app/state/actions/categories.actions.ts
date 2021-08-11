@@ -9,11 +9,11 @@ export const AddCategory = createAction('[Categories] Add Category', props<{enti
 export const AddCategoryFailed = createAction('[Categories] Add Category failed', props<{err: any}>());
 export const AddCategorySuccess = createAction('[Categories] Add Category success', props<{entity: Category}>());
 
-export const RemoveCategory = createAction('[Categories] Remove Category', props<{categoryId: number}>());
+export const RemoveCategory = createAction('[Categories] Remove Category', props<{id: number}>());
 export const RemoveCategoryFailed = createAction('[Categories] Remove Category failed', props<{err: any}>());
-export const RemoveCategorySuccess = createAction('[Categories] Remove Category success', props<{categoryId: number}>());
+export const RemoveCategorySuccess = createAction('[Categories] Remove Category success', props<{id: number}>());
 
-export const UpdateCategory = createAction('[Categories] Update Category', props<{category: Category}>());
+export const UpdateCategory = createAction('[Categories] Update Category', props<{entity: Category}>());
 export const UpdateCategoryFailed = createAction('[Categories] Update Category failed', props<{err: any}>());
 export const UpdateCategorySuccess = createAction('[Categories] Update Category success', props<{id: number, entity: Category}>());
 

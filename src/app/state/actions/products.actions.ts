@@ -5,7 +5,7 @@ export const LoadProducts = createAction('[Products] load products list');
 export const LoadProductsFailed = createAction('[Products] load products list failed');
 export const LoadProductsSuccess = createAction('[Products] load products list successes', props<{list: Product[]}>());
 
-export const AddProduct = createAction('[Products] Add Product', props<{product: Product}>());
+export const AddProduct = createAction('[Products] Add Product', props<{entity: Product}>());
 export const AddProductFailed = createAction('[Products] Add Product failed', props<{err: any}>());
 export const AddProductSuccess = createAction('[Products] Add Product success', props<{entity: Product}>());
 
